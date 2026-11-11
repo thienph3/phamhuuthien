@@ -1,4 +1,4 @@
-import type { Award, Book, Job, NavLink, Project, Publication } from './types'
+import type { Award, Book, Education, Job, NavLink, Project, Publication } from './types'
 
 /** All page copy lives here. Lines marked DRAFT need your own facts. */
 export const site = {
@@ -17,10 +17,9 @@ export const site = {
   lead: 'I’m Thien Pham (Phạm Hữu Thiên). Since 2016 I have built data platforms, ML models and backend services, and at be, Koina and FE Credit I was the first one in. Today I am a senior data engineer at Vinamilk, leading a team of seven ML engineers.',
   now: ['now: chatbot, search, document AI and OCR', 'reading: The Colle System'],
   about: [
-    'I started in software, writing C++ at FPT Software in 2016 and full-stack code at i3 Solution, then moved into data at GHN in 2018. At be I was the only data engineer at first and later moved into ML; after that I redesigned part of a customer data platform at Tiki, built a data team at Koina, led data engineering at MoMo and spent a year in backend at FE Credit.',
-    'I judge roles by scope more than title. I have been a company’s only data engineer, a head of data with a team of ten, a data engineering lead and the owner of core backend services. The move to backend in 2023 was deliberate, to learn systems at real scale, and in 2025 I came back to data and ML at Vinamilk, where my title is Senior Data Engineer and day to day I lead a team of seven ML engineers.',
-    'Side projects keep my product skills sharp, such as SpeakEng, a Flutter app that coaches English pronunciation with speech AI.',
-    'Outside work I play chess and practise my English, and both have turned into projects.',
+    'I started at Ho Chi Minh City University of Technology in 2007, then left to try playing chess professionally. It didn’t work out, so in 2012 I came back to IT at HCMC University of Education, where I co-authored machine learning papers and competed in programming contests. From 2016 I wrote C++ at FPT Software and full-stack code at i3 Solution, then moved into data at GHN in 2018.',
+    'I judge roles by scope more than title. I have been a company’s only data engineer, a head of data with a team of ten at its peak, a data engineering lead and the owner of core backend services. The move to backend in 2023 was deliberate, to learn systems at real scale, and in 2025 I returned to data and ML.',
+    'Side projects keep my product skills sharp: SpeakEng, a Flutter app that coaches English pronunciation with speech AI, and the chess notes on this site.',
   ],
   skills: [
     // DRAFT: add the data and ML tools you use at work (warehouse, orchestration, cloud, LLM stack). A data hiring manager looks for these first.
@@ -223,6 +222,28 @@ export const projects: Project[] = [
   },
 ]
 
+/** Education, newest first. Confirmed with the owner (2026-11-11). Unfinished study is labelled as such. */
+export const education: Education[] = [
+  {
+    when: '2020–2025',
+    title: 'Master’s coursework in Data Science (not completed)',
+    school: 'VNU-HCM University of Science',
+    text: 'Coursework toward the degree; I did not finish it.',
+  },
+  {
+    when: '2012–2016',
+    title: 'Bachelor’s in Information Technology, Software Engineering',
+    school: 'HCMC University of Education',
+    text: 'Trường Đại học Sư phạm TP.HCM, where I co-authored machine learning papers as a student (publications below).',
+  },
+  {
+    when: '2004–2007',
+    title: 'Mathematics class',
+    school: 'Lê Quý Đôn High School for the Gifted, Khánh Hòa',
+    text: 'Specialised maths class; on the province’s team at the national maths olympiad (below).',
+  },
+]
+
 /**
  * Awards, newest first. Checked with the owner against certificates (2026-11-11); the FIDE numbers are from the public
  * profile on that date.
@@ -256,7 +277,7 @@ export const awards: Award[] = [
 ]
 
 /**
- * Papers from my student research group at HCMC University of Education, newest first. Each one verified against the
+ * Papers I co-authored as a student at HCMC University of Education, newest first. Each one verified against the
  * published paper or the publisher (2026-11-11). Author lists exactly as published.
  */
 export const publications: Publication[] = [

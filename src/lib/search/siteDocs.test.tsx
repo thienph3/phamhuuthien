@@ -4,11 +4,11 @@ import { MemoryRouter } from 'react-router-dom'
 import { BookDetail } from '@/components/books/BookDetail'
 import { AwardsSection } from '@/components/sections/AwardsSection'
 import { ExperienceSection } from '@/components/sections/ExperienceSection'
-import { awards, books, experience, publications, site } from '@/content/site'
+import { awards, books, education, experience, publications, site } from '@/content/site'
 import { createIndex } from './bm25'
 import { buildSiteDocs } from './siteDocs'
 
-const docs = buildSiteDocs({ site, experience, books, awards, publications })
+const docs = buildSiteDocs({ site, experience, books, education, awards, publications })
 
 describe('site search documents', () => {
   it('give every section a unique id and URL', () => {
@@ -28,9 +28,9 @@ describe('site search documents', () => {
     const { container: home, unmount } = wrap(<ExperienceSection jobs={experience} />)
     for (const d of docs.filter((x) => x.section.startsWith('Experience'))) expect(home.querySelector(`[id="${d.url.split('#')[1]}"]`), d.url).not.toBeNull()
     unmount()
-    const { container: aw, unmount: off } = wrap(<AwardsSection awards={awards} publications={publications} />)
-    const awardDocs = docs.filter((x) => x.section === 'Awards' || x.section === 'Publications')
-    expect(awardDocs).toHaveLength(awards.length + publications.length)
+    const { container: aw, unmount: off } = wrap(<AwardsSection education={education} awards={awards} publications={publications} />)
+    const awardDocs = docs.filter((x) => ['Education', 'Awards', 'Publications'].includes(x.section))
+    expect(awardDocs).toHaveLength(education.length + awards.length + publications.length)
     expect(new Set(awardDocs.map((d) => d.id)).size).toBe(awardDocs.length) // anchors and React keys must be unique
     for (const d of awardDocs) expect(aw.querySelector(`[id="${d.url.split('#')[1]}"]`), d.url).not.toBeNull()
     off()

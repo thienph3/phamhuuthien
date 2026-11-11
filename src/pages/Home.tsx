@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import { AboutSection, AwardsSection, ContactSection, ExperienceSection, Hero, LibrarySection, LinkButton, SiteLayout, StatusPill } from '@/components'
-import { awards, books, experience, publications, site } from '@/content/site'
+import { awards, books, education, experience, publications, site } from '@/content/site'
 
 /** Home page: only assembles components from the library and the content file. */
 export function Home() {
@@ -20,7 +20,7 @@ export function Home() {
       />
       <AboutSection paragraphs={site.about} skills={site.skills} />
       <ExperienceSection jobs={experience} />
-      <AwardsSection awards={awards} publications={publications} />
+      <AwardsSection education={education} awards={awards} publications={publications} />
       {/* Projects section hidden for now; data stays in `projects` (site.ts). Re-add <ProjectsSection projects={projects} /> and its nav link to show it. */}
       <LibrarySection books={books} />
       <ContactSection note={site.contactNote} email={site.email} github={site.github} linkedin={site.linkedin} />

@@ -1,4 +1,4 @@
-import { awards, books, experience, publications, site } from '../src/content/site.ts'
+import { awards, books, education, experience, publications, site } from '../src/content/site.ts'
 import { createIndex, type SearchDoc } from '../src/lib/search/bm25.ts'
 import { buildSiteDocs } from '../src/lib/search/siteDocs.ts'
 import { tokenize } from '../src/lib/search/text.ts'
@@ -86,7 +86,7 @@ export function error(code: ErrorCode, now = Date.now()) {
  */
 const contactLine = [site.email && `Email: ${site.email}.`, site.linkedin && `LinkedIn: ${site.linkedin}.`, `GitHub: ${site.github}.`].filter(Boolean).join(' ')
 const companyOf = new Map(experience.map((j) => [j.company, `At ${j.company} (${j.companyNote}), ${j.period}, ${j.role}.`]))
-export const chatDocs: SearchDoc[] = buildSiteDocs({ site, experience, books, awards, publications }).map((d) => {
+export const chatDocs: SearchDoc[] = buildSiteDocs({ site, experience, books, education, awards, publications }).map((d) => {
   const company = d.section.startsWith('Experience · ') ? (d.section === 'Experience · Earlier' ? d.title : d.section.slice(13)) : undefined
   if (company && companyOf.has(company)) return { ...d, text: `${companyOf.get(company)} ${d.text}` }
   if (d.id === 'about') return { ...d, text: `${d.text}. Role: ${site.role}. Now: ${site.now.join('; ')}.` }

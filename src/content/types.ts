@@ -23,6 +23,9 @@ export type Job = {
   early?: boolean
 }
 
+/** A school or programme. `title` says exactly what was studied, including "(not completed)" when it was not finished. */
+export type Education = { when: string; title: string; school: string; text: string }
+
 /** A prize or selection. `when` is free text ("2014", "2004–05 and 2005–06"). Only claims a certificate or a public record backs. */
 export type Award = { when: string; title: string; org: string; text: string; link?: { label: string; href: string } }
 

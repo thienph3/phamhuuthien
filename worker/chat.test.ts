@@ -121,12 +121,19 @@ describe('retrieval', () => {
     ['How can I contact him?', 'contact'],
     ['what is he reading', 'library'],
     ['What chess opening does he play?', 'book-colle-system'],
-    ['Has he published papers?', 'paper-'],
     ['What awards did he win?', 'award-'],
     ['What is his chess rating?', 'award-khanh-hoa-provincial-chess'],
     ['Did he do ICPC?', 'award-acm-icpc'],
+    ['Where did he study?', 'edu-'],
+    ['Does he have a master’s degree?', 'edu-vnu-hcm-university-of-science'],
   ])('"%s" finds %s', (q, id) => {
     expect(retrieve(queryTokens(q))[0]?.id).toContain(id)
+  })
+  it('a question about papers brings the papers themselves into the sections', () => {
+    expect(retrieve(queryTokens('Has he published papers?')).some((d) => d.id.startsWith('paper-'))).toBe(true)
+  })
+  it('the chess-career story in About is among the sections for a question about it', () => {
+    expect(retrieve(queryTokens('Why did he leave university for chess?')).map((d) => d.id)).toContain('about')
   })
   it('question words and tiny numbers are not search words', () => {
     expect(queryTokens('What did he do in 2018?')).toEqual(['2018'])

@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import { Fragment, type ReactNode } from 'react'
-import type { Award, Publication } from '@/content/types'
+import type { Award, Education, Publication } from '@/content/types'
 import { anchors } from '@/lib/anchors'
 import { tokens } from '@/theme'
 import { Section } from '../layout/Section'
@@ -34,15 +34,29 @@ function Authors({ p }: { p: Publication }) {
   )
 }
 
-/** Awards (contests, olympiads, chess) and publications, each with a way to check it: a DOI or a public profile. */
-export function AwardsSection({ awards, publications }: { awards: Award[]; publications: Publication[] }) {
+/**
+ * Education, awards (contests, olympiads, chess) and publications. Each award or paper has a way to check it: a DOI or a
+ * public profile.
+ */
+export function AwardsSection({ education, awards, publications }: { education: Education[]; awards: Award[]; publications: Publication[] }) {
   return (
-    <Section id="awards" eyebrow="Awards & publications" title="Contests and research, as a student">
+    <Section id="awards" eyebrow="Education, awards & publications" title="Where I studied, and what came of it">
       <Typography color="text.secondary" sx={{ maxWidth: tokens.proseWidth, mt: -1.5, mb: 4 }}>
-        Maths and chess in Khánh Hòa first, then programming contests and machine learning research at HCMC University of
-        Education, where I co-authored papers on support vector machines.
+        A maths class at Lê Quý Đôn High School for the Gifted in Khánh Hòa, then software engineering at HCMC University
+        of Education, where I competed in programming contests and co-authored papers on support vector machines.
       </Typography>
-      <Group title="Awards" first>
+      <Group title="Education" first>
+        {education.map((e) => (
+          <Box component="li" key={e.school} id={anchors.education(e.school)} sx={row}>
+            <Typography sx={when}>{e.when}</Typography>
+            <Box>
+              <Typography sx={{ fontWeight: 650 }}>{e.title} · {e.school}</Typography>
+              <Typography color="text.secondary" sx={{ maxWidth: tokens.proseWidth }}>{e.text}</Typography>
+            </Box>
+          </Box>
+        ))}
+      </Group>
+      <Group title="Awards">
         {awards.map((a) => (
           <Box component="li" key={a.org} id={anchors.award(a.org)} sx={row}>
             <Typography sx={when}>{a.when}</Typography>

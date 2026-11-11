@@ -1,4 +1,4 @@
-import type { Award, Book, Job, Publication } from '@/content/types'
+import type { Award, Book, Education, Job, Publication } from '@/content/types'
 import { anchors } from '../anchors.ts'
 import type { SearchDoc } from './bm25.ts'
 
@@ -6,6 +6,7 @@ export type SiteContent = {
   site: { name: string; localName: string; lead: string; about: string[]; skills: { label: string; items: string[] }[]; contactNote: string }
   experience: Job[]
   books: Book[]
+  education?: Education[]
   awards?: Award[]
   publications?: Publication[]
 }
@@ -16,7 +17,7 @@ const join = (...parts: (string | undefined | false)[]) => parts.filter(Boolean)
  * Every searchable section of the public site, with the URL of its anchor. Built from the content data,
  * so it works from any page. Private book text and interactive boards are not included.
  */
-export function buildSiteDocs({ site, experience, books, awards = [], publications = [] }: SiteContent): SearchDoc[] {
+export function buildSiteDocs({ site, experience, books, education = [], awards = [], publications = [] }: SiteContent): SearchDoc[] {
   const docs: SearchDoc[] = [
     {
       id: 'about',
@@ -50,15 +51,17 @@ export function buildSiteDocs({ site, experience, books, awards = [], publicatio
         url: `/#${anchors.highlight(job.company, h.title)}`,
       })
   }
+  for (const e of education)
+    docs.push({ id: anchors.education(e.school), page: 'Home', section: 'Education', title: `${e.title} · ${e.school}`, text: `${e.when}. Study: ${e.title} at ${e.school}. ${e.text}`, url: `/#${anchors.education(e.school)}` })
   for (const a of awards)
-    docs.push({ id: anchors.award(a.org), page: 'Home', section: 'Awards', title: `${a.title} · ${a.org}`, text: join(a.when, 'award prize contest', a.text), url: `/#${anchors.award(a.org)}` })
+    docs.push({ id: anchors.award(a.org), page: 'Home', section: 'Awards', title: `${a.title} · ${a.org}`, text: `${a.when} award: ${a.title}, ${a.org}. ${a.text}`, url: `/#${anchors.award(a.org)}` })
   for (const p of publications)
     docs.push({
       id: anchors.publication(p.title),
       page: 'Home',
       section: 'Publications',
       title: p.title,
-      text: join(`Paper (publication) published ${p.year} in ${p.publisher === 'Journal' ? 'a journal' : p.publisher}:`, p.venue, 'Authors:', p.authors.join(', '), `DOI ${p.doi}`, 'research papers'),
+      text: `Paper published ${p.year} in ${p.venue}${p.publisher === 'Journal' ? '' : ` (${p.publisher})`}. Authors: ${p.authors.join(', ')}. DOI ${p.doi}.`,
       url: `/#${anchors.publication(p.title)}`,
     })
   docs.push({

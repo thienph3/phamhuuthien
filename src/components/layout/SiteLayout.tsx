@@ -3,7 +3,7 @@ import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import { useRef, type ReactNode } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
-import { awards, books, experience, navLinks, publications, site } from '@/content/site'
+import { awards, books, education, experience, navLinks, publications, site } from '@/content/site'
 import { buildSiteDocs } from '@/lib/search/siteDocs'
 import { SearchHighlight } from '../search/SearchHighlight'
 import { SiteSearch } from '../search/SiteSearch'
@@ -13,7 +13,7 @@ import { SiteHeader } from './SiteHeader'
 import { SkipLink } from './SkipLink'
 
 /** Everything the site search can find, built once from the content. */
-const searchDocs = buildSiteDocs({ site, experience, books, awards, publications })
+const searchDocs = buildSiteDocs({ site, experience, books, education, awards, publications })
 
 /** Shared page frame: skip link, header (with search), main landmark, footer. Every page uses it. */
 export function SiteLayout({ children }: { children: ReactNode }) {
