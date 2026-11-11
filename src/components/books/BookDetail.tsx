@@ -4,6 +4,7 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
 import type { Book, BookSection } from '@/content/types'
+import { anchors } from '@/lib/anchors'
 import { tokens } from '@/theme'
 import { BookCover } from '../cards/BookCover'
 import { PageContainer } from '../layout/PageContainer'
@@ -11,7 +12,6 @@ import { Eyebrow } from '../ui/Eyebrow'
 import { BookDemo } from './BookDemo'
 import { BookNotes } from './BookNotes'
 
-const slugId = (t: string) => 'section-' + t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 const demoTitle = (d: NonNullable<Book['demos']>[number]) => (d.type === 'repertoire' ? (d.title ?? 'My repertoire') : undefined)
 const statusLabel = { reading: 'Currently reading', read: 'Read', want: 'Want to read' } as const
 
@@ -30,9 +30,9 @@ export function splitLead(text: string): [string, string] {
 function Section({ s }: { s: BookSection }) {
   const List = s.numbered ? 'ol' : 'ul'
   return (
-    <Box component="section" aria-labelledby={slugId(s.title)} sx={{ mt: { xs: 7, md: 9 } }}>
+    <Box component="section" aria-labelledby={anchors.bookSection(s.title)} sx={{ mt: { xs: 7, md: 9 }, '& h2': { scrollMarginTop: 96 } }}>
       <Box sx={column}>
-        <Typography id={slugId(s.title)} variant="h2" component="h2" sx={{ fontSize: { xs: '1.5rem', md: '1.75rem' }, mb: 2 }}>{s.title}</Typography>
+        <Typography id={anchors.bookSection(s.title)} variant="h2" component="h2" sx={{ fontSize: { xs: '1.5rem', md: '1.75rem' }, mb: 2 }}>{s.title}</Typography>
         {s.paragraphs?.map((p) => <Typography key={p} sx={{ mb: 2, fontSize: '1.05rem' }}>{keepMoves(p)}</Typography>)}
         {s.items && (
           <Box component={List} sx={{ pl: s.numbered ? 3.5 : 3, mt: 0, mb: 2, '& li::marker': { color: 'primary.main', fontWeight: 700 } }}>

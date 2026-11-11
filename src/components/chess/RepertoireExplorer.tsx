@@ -73,7 +73,7 @@ export function RepertoireExplorer({ repertoire, notes = {}, myPage = 'my-repert
   const btn = { border: 1, borderColor: 'divider', width: 44, height: 44 }
 
   return (
-    <Box role="group" aria-label="Repertoire explorer. Arrow keys: right plays the main move, left goes back." tabIndex={0} onKeyDown={onKeyDown}
+    <Box data-search-ignore role="group" aria-label="Repertoire explorer. Arrow keys: right plays the main move, left goes back." tabIndex={0} onKeyDown={onKeyDown}
       sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(0, 400px) minmax(0, 1fr)' }, alignItems: 'start', border: 1, borderColor: 'divider', borderRadius: 2, p: { xs: 2, md: 3 }, bgcolor: 'background.paper' }}>
       <Box sx={{ minWidth: 0 }}>
         <BoardView fen={fen} lastMove={lastMove} orientation={orientation} size={400} />

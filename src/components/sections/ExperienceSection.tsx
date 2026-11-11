@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
 import type { Job } from '@/content/types'
+import { anchors } from '@/lib/anchors'
 import { tokens } from '@/theme'
 import { Section } from '../layout/Section'
 import { TagList } from '../ui/Tag'
@@ -15,7 +16,7 @@ function EarlyJobs({ jobs }: { jobs: Job[] }) {
       <Typography variant="h3" component="h3" sx={{ mb: 2 }}>Earlier</Typography>
       <Box component="ol" sx={{ listStyle: 'none', p: 0, m: 0, display: 'grid', gap: 2.5 }}>
         {jobs.map((job) => (
-          <Box component="li" key={job.company} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '260px minmax(0, 1fr)' }, gap: { xs: 0.5, md: 5 } }}>
+          <Box component="li" key={job.company} id={anchors.job(job.company)} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '260px minmax(0, 1fr)' }, gap: { xs: 0.5, md: 5 }, scrollMarginTop: 96 }}>
             <Typography sx={{ fontWeight: 600 }}>
               {job.company}
               {job.period && <Box component="span" sx={{ fontFamily: tokens.mono, fontWeight: 400, color: 'text.secondary', fontSize: '0.875rem', ml: 1 }}>{job.period}</Box>}
@@ -52,14 +53,14 @@ export function ExperienceSection({ jobs }: { jobs: Job[] }) {
             </Box>
             <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0, display: 'grid', gap: 3 }}>
               {job.highlights.map((h) => (
-                <li key={h.title}>
+                <Box component="li" key={h.title} id={anchors.highlight(job.company, h.title)} sx={{ scrollMarginTop: 96 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 0.5 }}>
                     <Typography component="h4" sx={{ fontWeight: 700, fontSize: '1.05rem', m: 0 }}>{h.title}</Typography>
                     {h.status && <Chip size="small" label={statusLabel[h.status]} color={h.status === 'production' ? 'primary' : 'default'} variant="outlined" />}
                   </Box>
                   <Typography color="text.secondary" sx={{ mb: h.tags ? 1.5 : 0, maxWidth: tokens.proseWidth }}>{h.text}</Typography>
                   {h.tags && <TagList tags={h.tags} />}
-                </li>
+                </Box>
               ))}
             </Box>
           </Box>

@@ -28,10 +28,11 @@ src/
     cards/      ContentCard, ProjectCard, BookCard, BookCover
     sections/   Hero, AboutSection, ExperienceSection, ProjectsSection, LibrarySection, ContactSection
     books/      BookDetail, BookNotes, BookDemo, BookReader, RepertoireDemo
+    search/     SiteSearch (header search box + dropdown), SearchHighlight
     chess/      GameViewer, PgnViewer, PositionDiagram, PositionQuiz, LineExplorer,
                 RepertoireExplorer (+ BoardView, MoveList, GameControls)
   content/      all page copy and data (site.ts) and its types; books/ holds generated move data
-  lib/          pure helpers with tests: book filtering, private books, lib/chess
+  lib/          pure helpers with tests: book filtering, private books, anchors, lib/search, lib/chess
   pages/        pages only assemble components + content (Home, BookPage, BookReaderPage, NotFound)
   App.tsx       route table: add new pages here
 scripts/        build-repertoire and the validation pipeline (Node, run locally)
@@ -47,6 +48,24 @@ New colours or spacing belong in `src/theme/tokens.ts`, not in components.
   `<ProjectsSection projects={projects} />` in `src/pages/Home.tsx` and its link in `navLinks`.
 - **Library:** `books` in `site.ts`. A book with `sections`, `notes` or `demos` gets a page at
   `/books/<slug>`. Search and topic filters appear once there are 6 or more books.
+
+## Site search
+
+The search box in the header (press `/`) searches the site's own sections with BM25
+(`src/lib/search/bm25.ts`, k1 = 1.2, b = 0.75; title matches count twice; the word being typed matches as a
+prefix; accents are ignored, so `pham huu thien` finds Phạm Hữu Thiên).
+
+- **What is searched:** `buildSiteDocs` (`src/lib/search/siteDocs.ts`) builds one entry per section from the
+  content data: About, every job highlight, the Library, each book's reader-note sections, Contact. Hidden
+  sections, private book text and interactive boards are not included. A test checks that every entry's
+  anchor exists on the rendered page.
+- **Choosing a result** opens its page at `?q=<query>#<anchor>`, scrolls to the section and highlights the
+  words. The highlight never changes the page's DOM: it uses the native CSS Custom Highlight API
+  (`::highlight(site-search)`, styled in `src/theme/theme.ts`), and in browsers without it draws boxes in a
+  layer over the text. Anything marked `data-search-ignore` is never highlighted. Leaving the page (any URL
+  without `?q=`) clears it.
+- **Anchors:** ids come from `src/lib/anchors.ts`, shared by the pages and the index. Keep them in sync by
+  using `anchors.*`, never hand-written ids.
 
 ## Private books (local only)
 

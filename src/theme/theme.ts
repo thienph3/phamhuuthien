@@ -28,6 +28,8 @@ export const theme = createTheme({
     // Plan requirement: all motion off for users who ask for reduced motion (ripples, skeletons, board).
     MuiCssBaseline: {
       styleOverrides: {
+        // Site search: native highlight (CSS Custom Highlight API); keep in sync with HIGHLIGHT_COLOR.
+        '::highlight(site-search)': { backgroundColor: 'rgba(250, 204, 21, 0.45)', color: 'inherit' },
         '@media (prefers-reduced-motion: reduce)': {
           '*, *::before, *::after': { animationDuration: '0.01ms !important', animationIterationCount: '1 !important', transitionDuration: '0.01ms !important', scrollBehavior: 'auto !important' },
         },
