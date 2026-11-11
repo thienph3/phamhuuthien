@@ -11,4 +11,6 @@ export const anchors = {
   job: (company: string) => `exp-${slugify(company)}`,
   highlight: (company: string, title: string) => `exp-${slugify(company)}-${slugify(title)}`,
   bookSection: (title: string) => `section-${slugify(title)}`,
+  award: (org: string) => `award-${slugify(org)}`,
+  publication: (title: string) => `paper-${slugify(title)}`,
 }

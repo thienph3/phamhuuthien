@@ -121,6 +121,10 @@ describe('retrieval', () => {
     ['How can I contact him?', 'contact'],
     ['what is he reading', 'library'],
     ['What chess opening does he play?', 'book-colle-system'],
+    ['Has he published papers?', 'paper-'],
+    ['What awards did he win?', 'award-'],
+    ['What is his chess rating?', 'award-khanh-hoa-provincial-chess'],
+    ['Did he do ICPC?', 'award-acm-icpc'],
   ])('"%s" finds %s', (q, id) => {
     expect(retrieve(queryTokens(q))[0]?.id).toContain(id)
   })

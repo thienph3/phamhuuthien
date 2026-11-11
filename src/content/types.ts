@@ -23,6 +23,15 @@ export type Job = {
   early?: boolean
 }
 
+/** A prize or selection. `when` is free text ("2014", "2004–05 and 2005–06"). Only claims a certificate or a public record backs. */
+export type Award = { when: string; title: string; org: string; text: string; link?: { label: string; href: string } }
+
+/**
+ * A paper, author list exactly as published. `me` is the index of my name in `authors` (shown in bold); keep the real
+ * position, never reorder. `doi` is the bare DOI ("10.1109/…").
+ */
+export type Publication = { year: number; title: string; authors: string[]; me: number; publisher: 'IEEE' | 'Springer' | 'Journal'; venue: string; doi: string }
+
 export type BookStatus = 'reading' | 'read' | 'want'
 
 export type Book = {

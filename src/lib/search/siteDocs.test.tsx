@@ -2,12 +2,13 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { render } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { BookDetail } from '@/components/books/BookDetail'
+import { AwardsSection } from '@/components/sections/AwardsSection'
 import { ExperienceSection } from '@/components/sections/ExperienceSection'
-import { books, experience, site } from '@/content/site'
+import { awards, books, experience, publications, site } from '@/content/site'
 import { createIndex } from './bm25'
 import { buildSiteDocs } from './siteDocs'
 
-const docs = buildSiteDocs({ site, experience, books })
+const docs = buildSiteDocs({ site, experience, books, awards, publications })
 
 describe('site search documents', () => {
   it('give every section a unique id and URL', () => {
@@ -27,6 +28,12 @@ describe('site search documents', () => {
     const { container: home, unmount } = wrap(<ExperienceSection jobs={experience} />)
     for (const d of docs.filter((x) => x.section.startsWith('Experience'))) expect(home.querySelector(`[id="${d.url.split('#')[1]}"]`), d.url).not.toBeNull()
     unmount()
+    const { container: aw, unmount: off } = wrap(<AwardsSection awards={awards} publications={publications} />)
+    const awardDocs = docs.filter((x) => x.section === 'Awards' || x.section === 'Publications')
+    expect(awardDocs).toHaveLength(awards.length + publications.length)
+    expect(new Set(awardDocs.map((d) => d.id)).size).toBe(awardDocs.length) // anchors and React keys must be unique
+    for (const d of awardDocs) expect(aw.querySelector(`[id="${d.url.split('#')[1]}"]`), d.url).not.toBeNull()
+    off()
     for (const book of books.filter((b) => b.sections)) {
       const { container, unmount: done } = wrap(<BookDetail book={{ ...book, sections: book.sections?.map((s) => ({ ...s, demo: undefined })) }} />)
       for (const d of docs.filter((x) => x.url.startsWith(`/books/${book.slug}#`))) expect(container.querySelector(`[id="${d.url.split('#')[1]}"]`), d.url).not.toBeNull()

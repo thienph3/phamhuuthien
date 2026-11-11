@@ -1,4 +1,5 @@
 export { AboutSection } from './AboutSection'
+export { AwardsSection } from './AwardsSection'
 export { ContactSection } from './ContactSection'
 export { ExperienceSection } from './ExperienceSection'
 export { Hero } from './Hero'

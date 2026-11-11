@@ -26,7 +26,7 @@ src/
     ui/         LinkButton, Eyebrow, Tag/TagList, StatusPill, ThemeToggle, SearchField,
                 FilterChips, EmptyState, Prose (long-form HTML/MDX text)
     cards/      ContentCard, ProjectCard, BookCard, BookCover
-    sections/   Hero, AboutSection, ExperienceSection, ProjectsSection, LibrarySection, ContactSection
+    sections/   Hero, AboutSection, ExperienceSection, AwardsSection, ProjectsSection, LibrarySection, ContactSection
     books/      BookDetail, BookNotes, BookDemo, BookReader, RepertoireDemo
     search/     SiteSearch (header search box + dropdown), SearchHighlight
     chat/       ChatWidget ("Ask about Thien" button + chat panel, mounted in App.tsx)
@@ -51,6 +51,10 @@ New colours or spacing belong in `src/theme/tokens.ts`, not in components.
   `<ProjectsSection projects={projects} />` in `src/pages/Home.tsx` and its link in `navLinks`.
 - **Library:** `books` in `site.ts`. A book with `sections`, `notes` or `demos` gets a page at
   `/books/<slug>`. Search and topic filters appear once there are 6 or more books.
+- **Awards & publications:** `awards` and `publications` in `site.ts`, newest first, shown by `AwardsSection` after
+  Experience. Add only what a certificate or a public record backs. Papers keep the author list exactly as published;
+  `me` is the index of my name (shown in bold), and `doi` is the bare DOI (linked via doi.org). Both are in site search
+  and the chatbot's sources automatically.
 
 ## Site search
 

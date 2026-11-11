@@ -1,4 +1,4 @@
-import type { Book, Job, NavLink, Project } from './types'
+import type { Award, Book, Job, NavLink, Project, Publication } from './types'
 
 /** All page copy lives here. Lines marked DRAFT need your own facts. */
 export const site = {
@@ -220,6 +220,81 @@ export const projects: Project[] = [
     summary: 'A small React component library and the site built from it, with an interactive chess opening explorer.',
     tags: ['Web', 'React', 'MUI', 'Cloudflare'],
     href: 'https://github.com/thienph3/phamhuuthien',
+  },
+]
+
+/**
+ * Awards, newest first. Checked with the owner against certificates (2026-11-11); the FIDE numbers are from the public
+ * profile on that date.
+ */
+export const awards: Award[] = [
+  {
+    when: '2014',
+    title: 'Second prize, team',
+    org: 'ACM ICPC Vietnam National',
+    text: 'Vietnam’s national round of the International Collegiate Programming Contest, a three-person team contest.',
+  },
+  {
+    when: '2014',
+    title: 'Consolation prize',
+    org: 'Vietnam Student Informatics Olympiad',
+    text: 'Giải Khuyến khích at Olympic Tin học Sinh viên Việt Nam, the national programming olympiad for university students.',
+  },
+  {
+    when: '2004–2006',
+    title: 'Khánh Hòa team',
+    org: 'Vietnam National High School Mathematics Olympiad',
+    text: 'Selected twice for the province’s team, in the 2004–05 and 2005–06 school years. Earlier, second prize in Khánh Hòa’s Casio calculator mathematics contest (2003–04).',
+  },
+  {
+    when: '1998–2007',
+    title: 'Gold and silver medals',
+    org: 'Khánh Hòa provincial chess championships',
+    text: 'FIDE rating: 1678 standard, 1637 rapid, as of November 2026.',
+    link: { label: 'FIDE profile', href: 'https://ratings.fide.com/profile/561016578' },
+  },
+]
+
+/**
+ * Papers from my student research group at HCMC University of Education, newest first. Each one verified against the
+ * published paper or the publisher (2026-11-11). Author lists exactly as published.
+ */
+export const publications: Publication[] = [
+  {
+    year: 2015,
+    title: 'Fuzzy Semi-supervised Large Margin One-Class Support Vector Machine',
+    authors: ['T. Le', 'V. Nguyen', 'T. Pham', 'M. Dinh', 'T. H. Le'],
+    me: 2,
+    publisher: 'Springer',
+    venue: 'Advances in Intelligent Systems and Computing, vol. 326, pp. 65–78',
+    doi: '10.1007/978-3-319-14633-1_5',
+  },
+  {
+    year: 2014,
+    title: 'Robust Support Vector Machine',
+    authors: ['T. Le', 'D. Tran', 'W. Ma', 'T. Pham', 'P. Duong', 'M. Nguyen'],
+    me: 3,
+    publisher: 'IEEE',
+    venue: 'IJCNN 2014, Beijing, pp. 4137–4144',
+    doi: '10.1109/IJCNN.2014.6889587',
+  },
+  {
+    year: 2014,
+    title: 'Kernel-based Semi-supervised Learning for Novelty Detection',
+    authors: ['V. Nguyen', 'T. Le', 'T. Pham', 'M. Dinh', 'T. H. Le'],
+    me: 2,
+    publisher: 'IEEE',
+    venue: 'IJCNN 2014, Beijing, pp. 4129–4136',
+    doi: '10.1109/IJCNN.2014.6889583',
+  },
+  {
+    year: 2013,
+    title: 'Fuzzy Unified Support Vector Machine for Brain-Computer Interface',
+    authors: ['M. T. Le', 'P. Duong', 'M. Nguyen', 'T. Pham', 'M. Dinh'],
+    me: 3,
+    publisher: 'Journal',
+    venue: 'HCMUE Journal of Science, no. 53, p. 123',
+    doi: '10.54607/hcmue.js.0.53.228(2013)',
   },
 ]
 
