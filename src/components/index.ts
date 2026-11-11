@@ -1,5 +1,6 @@
 export * from './books'
 export * from './cards'
+export * from './chat'
 export * from './layout'
 export * from './search'
 export * from './sections'

@@ -29,6 +29,7 @@ src/
     sections/   Hero, AboutSection, ExperienceSection, ProjectsSection, LibrarySection, ContactSection
     books/      BookDetail, BookNotes, BookDemo, BookReader, RepertoireDemo
     search/     SiteSearch (header search box + dropdown), SearchHighlight
+    chat/       ChatWidget ("Ask about Thien" button + chat panel, mounted in App.tsx)
     chess/      GameViewer, PgnViewer, PositionDiagram, PositionQuiz, LineExplorer,
                 RepertoireExplorer (+ BoardView, MoveList, GameControls)
   content/      all page copy and data (site.ts) and its types; books/ holds generated move data
@@ -36,6 +37,7 @@ src/
   pages/        pages only assemble components + content (Home, BookPage, BookReaderPage, NotFound)
   App.tsx       route table: add new pages here
 scripts/        build-repertoire and the validation pipeline (Node, run locally)
+worker/         the Cloudflare Worker: runs only for /api/* (the chatbot); everything else is static
 ```
 
 To change text, edit `src/content/site.ts`. Lines marked `DRAFT` there still need your own facts.
@@ -66,6 +68,59 @@ prefix; accents are ignored, so `pham huu thien` finds Phạm Hữu Thiên).
   without `?q=`) clears it.
 - **Anchors:** ids come from `src/lib/anchors.ts`, shared by the pages and the index. Keep them in sync by
   using `anchors.*`, never hand-written ids.
+
+## Chatbot
+
+"Ask about Thien" (bottom right of every page) answers questions about the site's public pages with
+Cloudflare Workers AI (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, set by `CHAT_MODEL` in `wrangler.jsonc`).
+The browser calls `POST /api/chat` on the same Worker that serves the site (`worker/chat.ts`); there is no API key
+and no other account.
+
+How an answer is made:
+
+1. **Greetings, thanks, goodbyes** get a fixed reply, without the model.
+2. **Retrieval:** the question is searched with the same BM25 index as the site search (whole words only,
+   question words removed). If no section scores at least `RELEVANCE_FLOOR`, the visitor gets a fixed
+   "I can only answer questions about Thien's pages" reply, without the model.
+3. **Model:** the top 4 sections (≤ 4,000 characters) are sent as CONTEXT with rules: answer only from CONTEXT,
+   refuse other topics, ignore instructions to change the rules, plain English, ≤ 120 words.
+4. **Output check:** an answer that contains a link or email that is not in CONTEXT is replaced by the refusal.
+5. **Sources** are built by the server, never by the model: `/<page>?q=<words>#<anchor>`. Clicking one opens
+   the section with the words highlighted, like a search result.
+
+Limits and errors (each shown to the visitor as a clear message; the question stays in the box to retry):
+
+| Situation | Code | Visitor sees |
+|---|---|---|
+| Free daily allocation (10,000 Neurons ≈ 95 answers) used up | `quota` 429 | resets at 07:00 Vietnam time (00:00 UTC) |
+| Workers AI out of capacity | `busy` 503 | try again in about 30 seconds |
+| More than 3 model answers per visitor, or 10 in total, per minute | `rate_limited` 429 | wait a minute |
+| Over 500 characters | `too_long` 413 | keep it under 500 characters |
+| Network down, timeout (20 s), anything else | `offline` / `unavailable` | try again later |
+
+Security notes:
+
+- The `Origin` check (must equal the site's own origin, no CORS) only stops **other websites' pages** from
+  calling the endpoint in a visitor's browser. It is **not authentication**: a script can send any `Origin`.
+  Scripts are bounded by the rate limits, the relevance gate, the size caps and the daily quota.
+- Only the visitor's own questions reach the model; `assistant` messages from the client are discarded.
+- Answers are rendered as plain text. Nothing is stored or logged except error codes.
+- A script rotating IPs can use up the daily quota (accepted: the chat is down until 00:00 UTC, there is no bill on
+  Workers Free, the rest of the site is unaffected). **If the account moves to Workers Paid, set a spend cap or
+  remove the `ai` binding first.**
+
+Testing:
+
+- `npm test` covers the Worker with a mocked `env.AI` and rate limiters (`worker/chat.test.ts`), and the panel
+  with a mocked `fetch` (`src/components/chat/ChatWidget.test.tsx`).
+- `npm run dev` / `npm run preview` have no Worker: the panel opens, but questions show "unavailable".
+- `npx wrangler dev` runs the Worker and the rate limits locally. Workers AI has no local simulation, so the AI
+  binding is `"remote": true`: it needs `npx wrangler login` and uses the real daily quota.
+- Real answers can also be checked on a preview upload (`npx wrangler versions upload`) before going live.
+
+After a deploy, check: a real answer with sources, an off-topic refusal, the "busy"/"quota" messages if they
+happen (the error mapping matches Workers AI codes 3036/3040 in the error text), and the Worker's CPU time in the
+dashboard (Free plan ≈ 10 ms per request).
 
 ## Private books (local only)
 
@@ -165,7 +220,9 @@ npm run pipeline            # both, stage 2 only if stage 1 passed
 Connect this repo in Workers & Pages with:
 
 - Build command: `npm run build`
-- Deploy command: `npx wrangler deploy` (serves `dist/`, see `wrangler.jsonc`)
+- Deploy command: `npx wrangler deploy` (serves `dist/` and the `worker/` for `/api/*`, see `wrangler.jsonc`)
 - Worker name must match `name` in `wrangler.jsonc` (`phamhuuthien`)
 
-Check the config locally with `npx wrangler deploy --dry-run` after a build.
+Check the config locally with `npx wrangler deploy --dry-run` after a build. It should list the bindings `AI`,
+`CHAT_IP_LIMIT`, `CHAT_GLOBAL_LIMIT`, `ASSETS` and the `CHAT_MODEL` variable. Workers AI and rate limiting need no
+setup in the dashboard: the bindings in `wrangler.jsonc` create them.

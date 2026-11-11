@@ -5,8 +5,26 @@
   "build": {
     "command": "npm run build"
   },
+  // The Worker runs only for /api/* (the chatbot); every other path is a static asset from dist/.
+  "main": "worker/index.ts",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
-  }
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  // Workers AI. Free: 10,000 Neurons/day, reset 00:00 UTC. If the account moves to Workers Paid, add a spend cap
+  // or remove this binding first. `remote: true` lets `wrangler dev` reach the real model (needs `wrangler login`).
+  "ai": {
+    "binding": "AI",
+    "remote": true
+  },
+  "vars": {
+    "CHAT_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+  },
+  // Approximate, per Cloudflare location. Only the model path counts (fixed replies are free).
+  "ratelimits": [
+    { "name": "CHAT_IP_LIMIT", "namespace_id": "1001", "simple": { "limit": 3, "period": 60 } },
+    { "name": "CHAT_GLOBAL_LIMIT", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } }
+  ]
 }

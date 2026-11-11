@@ -33,12 +33,17 @@ export function createIndex(docs: SearchDoc[]) {
     return Math.log(1 + (entries.length - n + 0.5) / (n + 0.5))
   }
 
-  /** Ranked sections for a query, best first, plus the words used (for highlighting). */
-  function search(query: string, limit = 8): SearchResult {
+  /**
+   * Ranked sections for a query, best first, plus the words used (for highlighting).
+   * `prefix: false` matches whole words only (the chatbot uses it; typing-as-you-go search does not).
+   */
+  function search(query: string, limit = 8, { prefix = true }: { prefix?: boolean } = {}): SearchResult {
     const words = tokenize(query)
     if (words.length === 0) return { terms: [], hits: [] }
     const last = words[words.length - 1]
-    const groups = [...words.slice(0, -1).map((w) => [w]), vocabulary.filter((v) => v.startsWith(last)).slice(0, MAX_PREFIX_TERMS)]
+    const groups = prefix
+      ? [...words.slice(0, -1).map((w) => [w]), vocabulary.filter((v) => v.startsWith(last)).slice(0, MAX_PREFIX_TERMS)]
+      : words.map((w) => [w])
     const hits = entries
       .map(({ doc, tf, length }) => {
         let score = 0
