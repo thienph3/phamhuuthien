@@ -270,14 +270,13 @@ Connect this repo in Workers & Pages with:
 Check the config locally with `npx wrangler deploy --dry-run` after a build. It should list the bindings `DB`, `AI`,
 `CHAT_IP_LIMIT`, `CHAT_GLOBAL_LIMIT`, `WRITE_IP_LIMIT`, `WRITE_GLOBAL_LIMIT`, `ASSETS` and the `CHAT_MODEL` and
 `CHAT_NEURON_BUDGET` variables. Workers AI, rate limits and the cron need no dashboard setup. The D1 database
-`phamhuuthien-metrics` is created automatically on the first deploy (no `database_id` in `wrangler.jsonc`).
+`phamhuuthien-metrics` was created by the first deploy and its ID is pinned as `database_id` in `wrangler.jsonc`, so
+every deploy (from Git or a laptop) uses the same database. If it is ever recreated, put the new ID there.
 
-After the first deploy with the report:
+Post-deploy checks for the report:
 
-1. In the dashboard (Storage & Databases → D1), confirm `phamhuuthien-metrics` exists, copy its ID into `database_id`
-   in `wrangler.jsonc` and commit, so later deploys (including a local `wrangler deploy`) always use the same database.
-2. Open a few pages, wait up to 15 minutes, then check `/report` shows them and `/api/stats?days=7` returns data.
-3. In Workers → phamhuuthien → Metrics, check the cron's CPU time stays well under 10 ms (fallback: `*/30` in
+1. Open a few pages, wait up to 15 minutes, then check `/report` shows them and `/api/stats?days=7` returns data.
+2. In Workers → phamhuuthien → Metrics, check the cron's CPU time stays well under 10 ms (fallback: `*/30` in
    `triggers.crons` and "Every 15 minutes" in `ReportView.tsx`).
-4. After day 91, check that no `daily` rows older than 90 days remain:
+3. After day 91, check that no `daily` rows older than 90 days remain:
    `npx wrangler d1 execute phamhuuthien-metrics --remote --command "SELECT MIN(day) FROM daily"`.

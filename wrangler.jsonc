@@ -21,10 +21,10 @@
     "binding": "AI",
     "remote": true
   },
-  // Report counters (daily totals only). No database_id: Wrangler creates the database on the first deploy.
-  // After that, copy its ID from the dashboard into "database_id" so every deploy uses the same database.
+  // Report counters (daily totals only). Created by the first deploy (auto-provisioning); the ID is pinned so every
+  // deploy, from Git or a laptop, uses this same database. Not a secret: it only works with the account's credentials.
   "d1_databases": [
-    { "binding": "DB", "database_name": "phamhuuthien-metrics" }
+    { "binding": "DB", "database_name": "phamhuuthien-metrics", "database_id": "ad5117a0-d0ed-4039-aad7-20105cda5b49" }
   ],
   // Builds the report snapshots and deletes days older than 90 (worker/metrics.ts runCron).
   "triggers": {

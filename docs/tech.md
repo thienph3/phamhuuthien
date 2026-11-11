@@ -59,7 +59,8 @@ Checked against installed packages on 2026-11-11. Versions are pinned in `packag
 
 - **D1 binding:** `"d1_databases": [{ "binding": "DB", "database_name": "…" }]`. Without `database_id`, Wrangler
   **auto-provisions** the database on deploy; from a Git-connected deploy the ID is only shown in the dashboard (not
-  written back), so pin it in `wrangler.jsonc` afterwards. Source: https://developers.cloudflare.com/workers/wrangler/configuration/#automatic-provisioning
+  written back), so pin it in `wrangler.jsonc` afterwards. Pinned 2026-11-11: `phamhuuthien-metrics` =
+  `ad5117a0-d0ed-4039-aad7-20105cda5b49`. Source: https://developers.cloudflare.com/workers/wrangler/configuration/#automatic-provisioning
 - **D1 API:** `env.DB.prepare(sql).bind(...values)` → `.run()` (D1Result `{ success, meta, results }`), `.all()`,
   `.first(column?)` (row or `null`), `.raw()`; `env.DB.batch([stmt, …])` runs statements sequentially as one transaction
   (rolls back on error). Parameters: `?` or `?NNN` only (no named params). `exec()` only for maintenance.
