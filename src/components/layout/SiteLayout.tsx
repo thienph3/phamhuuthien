@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box'
+import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import { useRef, type ReactNode } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
 import { books, experience, navLinks, site } from '@/content/site'
 import { buildSiteDocs } from '@/lib/search/siteDocs'
 import { SearchHighlight } from '../search/SearchHighlight'
@@ -22,7 +24,9 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <SiteHeader brand={site.brand} links={navLinks} actions={<Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}><SiteSearch docs={searchDocs} /><ThemeToggle /></Stack>} />
       <Box component="main" id="main" ref={main}>{children}</Box>
       <SearchHighlight root={main} />
-      <SiteFooter>© {site.year} {site.name}</SiteFooter>
+      <SiteFooter>
+        © {site.year} {site.name} · <Link component={RouterLink} to="/report" color="inherit" underline="always">Site report</Link>
+      </SiteFooter>
     </Box>
   )
 }

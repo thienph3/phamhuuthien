@@ -31,3 +31,9 @@ export const tokens = {
 
 /** Soft accent tint that works in both colour schemes (used by pills and tags). */
 export const accentSoft = 'color-mix(in srgb, var(--mui-palette-primary-main) 14%, transparent)'
+
+/** Report chart colours per scheme (the mockup's): second series, warning, error and neutral. */
+export const chartColors = {
+  light: { c2: '#34d399', warn: '#b45309', err: '#b42318', grey: '#94a3a0', track: '#eef6f2' },
+  dark: { c2: '#047857', warn: '#f5b94a', err: '#ff8a7a', grey: '#55665f', track: '#16231d' },
+} as const

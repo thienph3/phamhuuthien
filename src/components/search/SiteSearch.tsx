@@ -9,6 +9,7 @@ import { Fragment, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createIndex, type SearchDoc, type SearchHit } from '@/lib/search/bm25'
 import { matchRanges } from '@/lib/search/text'
+import { markVia } from '@/lib/visit'
 import { accentSoft, tokens } from '@/theme'
 import { HIGHLIGHT_COLOR } from './SearchHighlight'
 
@@ -74,6 +75,7 @@ export function SiteSearch({ docs }: { docs: SearchDoc[] }) {
   }
   const choose = (hit: SearchHit) => {
     const [pathname, anchor] = hit.doc.url.split('#')
+    markVia('search', pathname)
     navigate({ pathname, search: `?q=${encodeURIComponent(query.trim())}`, hash: anchor ? `#${anchor}` : '' })
     close()
   }

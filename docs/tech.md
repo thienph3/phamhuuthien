@@ -54,3 +54,25 @@ Checked against installed packages on 2026-11-11. Versions are pinned in `packag
   matches `3036` / "account limited" → quota and `3040` / "out of capacity" → busy in `err.message`; anything else
   fails safe to `unavailable`. Check on the live Worker and update this note. Verified with Wrangler 4.157.0
   (`npx wrangler deploy --dry-run` lists AI, both rate limits, ASSETS, CHAT_MODEL).
+
+## Cloudflare D1, cron triggers, request.cf, AI usage (verified 2026-11-11)
+
+- **D1 binding:** `"d1_databases": [{ "binding": "DB", "database_name": "…" }]`. Without `database_id`, Wrangler
+  **auto-provisions** the database on deploy; from a Git-connected deploy the ID is only shown in the dashboard (not
+  written back), so pin it in `wrangler.jsonc` afterwards. Source: https://developers.cloudflare.com/workers/wrangler/configuration/#automatic-provisioning
+- **D1 API:** `env.DB.prepare(sql).bind(...values)` → `.run()` (D1Result `{ success, meta, results }`), `.all()`,
+  `.first(column?)` (row or `null`), `.raw()`; `env.DB.batch([stmt, …])` runs statements sequentially as one transaction
+  (rolls back on error). Parameters: `?` or `?NNN` only (no named params). `exec()` only for maintenance.
+  Source: https://developers.cloudflare.com/d1/worker-api/d1-database/ , https://developers.cloudflare.com/d1/worker-api/prepared-statements/
+- **D1 free limits:** 100,000 rows written and 5,000,000 rows read per day (all databases, reset 00:00 UTC), 5 GB; since
+  2026-09-01 queries fail on Free once exceeded. Source: https://developers.cloudflare.com/d1/platform/pricing
+- **Cron triggers:** `"triggers": { "crons": ["*/15 * * * *"] }`; handler `scheduled(controller, env, ctx)`; Free plan:
+  5 crons per account, **10 ms CPU** per run (waiting on D1 is not CPU). Source: https://developers.cloudflare.com/workers/platform/limits/
+- **`ctx.waitUntil(promise)`:** work after the response, up to 30 s. Source: https://developers.cloudflare.com/workers/runtime-apis/context/
+- **`request.cf.country`:** 2-letter code or null (same as `CF-IPCountry`; `XX` unknown, `T1` Tor).
+  Source: https://developers.cloudflare.com/workers/runtime-apis/request/
+- **Workers AI usage:** the 70B model's synchronous output has `usage: { prompt_tokens, completion_tokens, total_tokens }`.
+  Source: https://developers.cloudflare.com/workers-ai/models/llama-3.3-70b-instruct-fp8-fast/sync-output.json
+- **`preview_urls`** (boolean, default false) in the Wrangler schema (`node_modules/wrangler/config-schema.json`, 4.157.0).
+- **Tests:** `node:sqlite` (`DatabaseSync`, Node 22.23, experimental warning) supports `WITHOUT ROWID` and
+  `ON CONFLICT … DO UPDATE SET value = value + excluded.value`; `worker/testDb.ts` wraps it in the D1 shape.

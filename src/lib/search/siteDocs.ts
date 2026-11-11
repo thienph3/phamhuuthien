@@ -20,7 +20,8 @@ export function buildSiteDocs({ site, experience, books }: SiteContent): SearchD
       id: 'about',
       page: 'Home',
       section: 'About',
-      title: `Hi, I’m ${site.name.split(' ')[1] ?? site.name}`,
+      // Same as the About heading: the first name ("Thien Pham" → Thien).
+      title: `Hi, I’m ${site.name.split(' ')[0]}`,
       text: join(site.name, site.localName, site.lead, ...site.about, ...site.skills.map((g) => `${g.label}: ${g.items.join(', ')}`)),
       url: '/#about',
     },

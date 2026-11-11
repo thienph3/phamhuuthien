@@ -1,2 +1,2 @@
 export { theme } from './theme'
-export { tokens, accentSoft } from './tokens'
+export { tokens, accentSoft, chartColors } from './tokens'

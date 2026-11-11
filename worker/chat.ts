@@ -2,17 +2,28 @@ import { books, experience, site } from '../src/content/site.ts'
 import { createIndex, type SearchDoc } from '../src/lib/search/bm25.ts'
 import { buildSiteDocs } from '../src/lib/search/siteDocs.ts'
 import { tokenize } from '../src/lib/search/text.ts'
+import { gate, latencyBucket, neuronsFor, record, safely, todayNeurons, type MetricsEnv, type Row } from './metrics.ts'
 
 /** The Workers AI binding, typed only as far as we use it (no extra dependency). */
 export type Ai = { run(model: string, input: { messages: { role: string; content: string }[]; max_tokens: number; temperature: number }): Promise<unknown> }
 /** A Workers rate-limit binding. */
 export type RateLimit = { limit(options: { key: string }): Promise<{ success: boolean }> }
-export type Env = {
+export type Env = MetricsEnv & {
   AI: Ai
   CHAT_IP_LIMIT: RateLimit
   CHAT_GLOBAL_LIMIT: RateLimit
   ASSETS: { fetch(request: Request): Promise<Response> }
   CHAT_MODEL?: string
+  /** Own daily Neuron budget (string var); the chat says "daily limit" once today's count reaches it. */
+  CHAT_NEURON_BUDGET?: string
+}
+
+/** Free daily allocation, and our own default stop point below it (plan: report page, "Own quota counter"). */
+export const FREE_NEURONS = 10_000
+export const DEFAULT_NEURON_BUDGET = 9_500
+export const neuronBudget = (env: Pick<Env, 'CHAT_NEURON_BUDGET'>) => {
+  const n = Number(env.CHAT_NEURON_BUDGET)
+  return Number.isFinite(n) && n > 0 && n <= FREE_NEURONS ? n : DEFAULT_NEURON_BUDGET
 }
 
 export const DEFAULT_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
@@ -84,6 +95,8 @@ export const chatDocs: SearchDoc[] = buildSiteDocs({ site, experience, books }).
   return d
 })
 const index = createIndex(chatDocs)
+/** Section id → title, for the report's "What people ask about" (ids are what the chat records). */
+export const TOPIC_TITLES = new Map(chatDocs.map((d) => [d.id, d.title]))
 
 /** Question words that say nothing about the topic ("what did he build" → "build"). */
 const QUESTION_WORDS = new Set('what who whom whose which where when why how does do did can could would will should tell about he his him you your please know give list any some there has have had not just also really'.split(' '))
@@ -148,7 +161,7 @@ export function smallTalk(text: string): string | undefined {
 }
 
 /** Reads the body with a running byte count; `Content-Length` is not trusted. */
-async function readBody(request: Request): Promise<string | 'too_long'> {
+export async function readBody(request: Request, maxBytes = MAX_BODY_BYTES): Promise<string | 'too_long'> {
   if (!request.body) return ''
   const reader = request.body.getReader()
   const chunks: Uint8Array[] = []
@@ -157,7 +170,7 @@ async function readBody(request: Request): Promise<string | 'too_long'> {
     const { done, value } = await reader.read()
     if (done) break
     size += value.byteLength
-    if (size > MAX_BODY_BYTES) {
+    if (size > maxBytes) {
       await reader.cancel().catch(() => {})
       return 'too_long'
     }
@@ -194,7 +207,7 @@ export function parseMessages(body: unknown): Message[] | ErrorCode {
 }
 
 /** Workers AI errors → our codes: 3036 daily allocation used up, 3040 out of capacity, else unavailable. */
-export function mapAiError(err: unknown): ErrorCode {
+export function mapAiError(err: unknown): 'quota' | 'busy' | 'unavailable' {
   const text = err instanceof Error ? `${err.name} ${err.message}` : String(err)
   if (/\b3036\b|account limited|daily free allocation/i.test(text)) return 'quota'
   if (/\b3040\b|out of capacity|capacity temporarily exceeded/i.test(text)) return 'busy'
@@ -230,20 +243,51 @@ const withTimeout = <T>(p: Promise<T>, ms: number) =>
     p.then((v) => (clearTimeout(t), resolve(v)), (e) => (clearTimeout(t), reject(e)))
   })
 
-export type ChatOptions = { timeoutMs?: number; now?: () => number; log?: (code: string) => void }
+/**
+ * Same-origin JSON POST only: other methods, a missing / foreign Origin, a cross-site fetch or a non-JSON body are
+ * refused. No CORS headers are ever sent. Shared by /api/chat and /api/visit.
+ */
+export function postCheck(request: Request): ErrorCode | undefined {
+  if (request.method !== 'POST') return 'method'
+  const origin = request.headers.get('Origin')
+  if (!origin || origin !== new URL(request.url).origin) return 'forbidden'
+  const fetchSite = request.headers.get('Sec-Fetch-Site')
+  if (fetchSite && fetchSite !== 'same-origin') return 'forbidden'
+  if (!/^application\/json\s*(;|$)/i.test(request.headers.get('Content-Type') ?? '')) return 'unsupported'
+}
+
+export type ChatOptions = {
+  timeoutMs?: number
+  now?: () => number
+  log?: (code: string) => void
+  /** `ctx.waitUntil`: metrics are written after the response. Without it they are not written. */
+  waitUntil?: (promise: Promise<unknown>) => void
+}
+type Outcome = 'answered' | 'small_talk' | 'refused' | 'rate_limited' | 'quota' | 'busy' | 'error'
 
 /** `POST /api/chat`. See plan "API" steps 1–12 for every check, in the same order. */
 export async function handleChat(request: Request, env: Env, opts: ChatOptions = {}): Promise<Response> {
   const now = opts.now ?? Date.now
   const log = opts.log ?? ((code: string) => console.error(`chat: ${code}`))
 
+  // Cloudflare always sets CF-Connecting-IP; 'unknown' only happens outside Cloudflare (tests, local tools).
+  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown'
+  /**
+   * Counts the outcome (report page). Through the shared write gate, except a model call, which is already behind the
+   * chat limits and the Neuron budget and must be counted so the budget stays exact (plan W1, S-C2-2).
+   */
+  const track = (outcome: Outcome, extra: Row[] = [], { modelCall = false } = {}) => {
+    const db = env.DB
+    if (!db || !opts.waitUntil) return
+    opts.waitUntil(safely(async () => {
+      if (!modelCall && !(await gate(env, ip))) return
+      await record(db, [['chat', outcome, 1], ...extra], now())
+    }, log))
+  }
+
   // 1. Method, origin, content type. No CORS headers, ever.
-  if (request.method !== 'POST') return error('method')
-  const origin = request.headers.get('Origin')
-  if (!origin || origin !== new URL(request.url).origin) return error('forbidden')
-  const fetchSite = request.headers.get('Sec-Fetch-Site')
-  if (fetchSite && fetchSite !== 'same-origin') return error('forbidden')
-  if (!/^application\/json\s*(;|$)/i.test(request.headers.get('Content-Type') ?? '')) return error('unsupported')
+  const refused = postCheck(request)
+  if (refused) return error(refused)
 
   // 2. Size and schema.
   const raw = await readBody(request)
@@ -264,26 +308,41 @@ export async function handleChat(request: Request, env: Env, opts: ChatOptions =
 
   // 4. Small talk: fixed reply, no model, no limit.
   const greeting = smallTalk(question)
-  if (greeting) return json({ answer: greeting, sources: [] })
+  if (greeting) {
+    track('small_talk')
+    return json({ answer: greeting, sources: [] })
+  }
 
   // 5. Retrieval and relevance gate. A short follow-up borrows the previous question's words.
   const own = queryTokens(question)
   const usePrevious = own.length < 3 && previous !== undefined
   const tokens = [...new Set([...own, ...(usePrevious ? queryTokens(previous) : [])])].slice(0, MAX_QUERY_TOKENS)
   const docs = retrieve(tokens)
-  if (docs.length === 0) return json({ answer: REFUSAL, sources: [] })
+  if (docs.length === 0) {
+    track('refused')
+    return json({ answer: REFUSAL, sources: [] })
+  }
 
   // 6. Rate limits on the model path only.
-  // Cloudflare always sets CF-Connecting-IP; 'unknown' only happens outside Cloudflare (tests, local tools).
-  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown'
   // Per visitor first: a visitor over their own limit must not spend the shared global budget.
-  if (!(await env.CHAT_IP_LIMIT.limit({ key: `ip:${ip}` })).success) return error('rate_limited', now())
-  if (!(await env.CHAT_GLOBAL_LIMIT.limit({ key: 'global' })).success) return error('rate_limited', now())
+  if (!(await env.CHAT_IP_LIMIT.limit({ key: `ip:${ip}` })).success || !(await env.CHAT_GLOBAL_LIMIT.limit({ key: 'global' })).success) {
+    track('rate_limited')
+    return error('rate_limited', now())
+  }
+  // Own Neuron budget: best-effort. If D1 fails or is slow the check is skipped; Cloudflare's 3036 is the backstop.
+  if (env.DB) {
+    const used = await todayNeurons(env.DB, now())
+    if (used !== undefined && used >= neuronBudget(env)) {
+      track('quota')
+      return error('quota', now())
+    }
+  }
 
   // 7. Bounded prompt and model call.
   const context = buildContext(docs)
   const userTurn = usePrevious ? `Earlier question: ${previous}\nQuestion: ${question}` : question
   let result: unknown
+  const started = now()
   try {
     result = await withTimeout(
       env.AI.run(env.CHAT_MODEL || DEFAULT_MODEL, {
@@ -296,17 +355,27 @@ export async function handleChat(request: Request, env: Env, opts: ChatOptions =
   } catch (err) {
     const code = mapAiError(err)
     log(code)
+    track(code === 'unavailable' ? 'error' : code)
     return error(code, now())
   }
   const text = modelText(result)
   if (text === undefined) {
     log('unavailable')
+    track('error')
     return error('unavailable', now())
   }
+  const ms = now() - started
+  // Tokens from the model's usage; if missing, estimate ~4 characters per token so the budget still counts.
+  const usage = (result as { usage?: { prompt_tokens?: unknown; completion_tokens?: unknown } }).usage
+  const count = (v: unknown, chars: number) => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : Math.ceil(chars / 4))
+  const neurons = neuronsFor(count(usage?.prompt_tokens, systemPrompt(context).length + userTurn.length), count(usage?.completion_tokens, text.length))
 
   // 8–10. Output check, server-built sources.
   const answer = checkAnswer(text, context)
   // No sources under a refusal or a "don't know": they would suggest the page answers it.
   const sources = answer === REFUSAL || /\bdon[’']?t know\b|\bdo not know\b/i.test(answer) ? [] : docs.map((d) => ({ title: d.title, url: sourceUrl(d, tokens) }))
+  // Neurons are real spend for every model call; answer time and topics count only for answers (plan Metrics).
+  if (answer === REFUSAL) track('refused', [['neurons', '', neurons]], { modelCall: true })
+  else track('answered', [['neurons', '', neurons], ['latency', latencyBucket(ms), 1], ['latency_ms', '', ms], ...(sources.length ? docs.map((d): Row => ['topic', d.id, 1]) : [])], { modelCall: true })
   return json({ answer, sources })
 }

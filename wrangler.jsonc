@@ -5,7 +5,7 @@
   "build": {
     "command": "npm run build"
   },
-  // The Worker runs only for /api/* (the chatbot); every other path is a static asset from dist/.
+  // The Worker runs only for /api/* (chatbot, report beacon and stats); every other path is a static asset from dist/.
   "main": "worker/index.ts",
   "assets": {
     "directory": "./dist",
@@ -13,18 +13,32 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
   },
+  // Preview URLs would share the D1 binding and could write test rows into the public report (security review S4).
+  "preview_urls": false,
   // Workers AI. Free: 10,000 Neurons/day, reset 00:00 UTC. If the account moves to Workers Paid, add a spend cap
   // or remove this binding first. `remote: true` lets `wrangler dev` reach the real model (needs `wrangler login`).
   "ai": {
     "binding": "AI",
     "remote": true
   },
-  "vars": {
-    "CHAT_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+  // Report counters (daily totals only). No database_id: Wrangler creates the database on the first deploy.
+  // After that, copy its ID from the dashboard into "database_id" so every deploy uses the same database.
+  "d1_databases": [
+    { "binding": "DB", "database_name": "phamhuuthien-metrics" }
+  ],
+  // Builds the report snapshots and deletes days older than 90 (worker/metrics.ts runCron).
+  "triggers": {
+    "crons": ["*/15 * * * *"]
   },
-  // Approximate, per Cloudflare location. Only the model path counts (fixed replies are free).
+  "vars": {
+    "CHAT_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "CHAT_NEURON_BUDGET": "9500"
+  },
+  // Approximate, per Cloudflare location. CHAT_*: model path only. WRITE_*: every report counter write.
   "ratelimits": [
     { "name": "CHAT_IP_LIMIT", "namespace_id": "1001", "simple": { "limit": 3, "period": 60 } },
-    { "name": "CHAT_GLOBAL_LIMIT", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } }
+    { "name": "CHAT_GLOBAL_LIMIT", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } },
+    { "name": "WRITE_IP_LIMIT", "namespace_id": "1003", "simple": { "limit": 20, "period": 60 } },
+    { "name": "WRITE_GLOBAL_LIMIT", "namespace_id": "1004", "simple": { "limit": 8, "period": 60 } }
   ]
 }

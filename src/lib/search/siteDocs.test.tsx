@@ -19,6 +19,9 @@ describe('site search documents', () => {
     expect(jobDocs.length).toBe(experience.reduce((n, j) => n + (j.early ? 1 : j.highlights.length), 0))
     expect(docs.map((d) => d.id)).toEqual(expect.arrayContaining(['about', 'library', 'contact']))
   })
+  it('title About like its heading, with the first name (regression: was "Hi, I’m Pham")', () => {
+    expect(docs.find((d) => d.id === 'about')!.title).toBe('Hi, I’m Thien')
+  })
   it('point to anchors that exist on the rendered pages', () => {
     const wrap = (ui: React.ReactNode) => render(<MemoryRouter><ThemeProvider theme={createTheme()}>{ui}</ThemeProvider></MemoryRouter>)
     const { container: home, unmount } = wrap(<ExperienceSection jobs={experience} />)

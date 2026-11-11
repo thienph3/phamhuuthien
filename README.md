@@ -30,14 +30,15 @@ src/
     books/      BookDetail, BookNotes, BookDemo, BookReader, RepertoireDemo
     search/     SiteSearch (header search box + dropdown), SearchHighlight
     chat/       ChatWidget ("Ask about Thien" button + chat panel, mounted in App.tsx)
+    report/     ReportView and its SVG charts (TimeChart, Gauge, MeterTable, Bars) for /report
     chess/      GameViewer, PgnViewer, PositionDiagram, PositionQuiz, LineExplorer,
                 RepertoireExplorer (+ BoardView, MoveList, GameControls)
   content/      all page copy and data (site.ts) and its types; books/ holds generated move data
   lib/          pure helpers with tests: book filtering, private books, anchors, lib/search, lib/chess
-  pages/        pages only assemble components + content (Home, BookPage, BookReaderPage, NotFound)
+  pages/        pages only assemble components + content (Home, BookPage, BookReaderPage, Report, NotFound)
   App.tsx       route table: add new pages here
 scripts/        build-repertoire and the validation pipeline (Node, run locally)
-worker/         the Cloudflare Worker: runs only for /api/* (the chatbot); everything else is static
+worker/         the Cloudflare Worker: runs only for /api/* (chatbot, report beacon, stats) and the report cron
 ```
 
 To change text, edit `src/content/site.ts`. Lines marked `DRAFT` there still need your own facts.
@@ -121,6 +122,49 @@ Testing:
 After a deploy, check: a real answer with sources, an off-topic refusal, the "busy"/"quota" messages if they
 happen (the error mapping matches Workers AI codes 3036/3040 in the error text), and the Worker's CPU time in the
 dashboard (Free plan ≈ 10 ms per request).
+
+## Site report (`/report`)
+
+A public page (linked in the footer) with live numbers from the site: page views, visits, chatbot questions by
+outcome, answer rate and time, Workers AI quota use per day and today, most read pages, chatbot topics, countries,
+referrers, devices, and opens from search and chat sources.
+
+```
+browser ──POST /api/visit──▶ Worker ─┐                          ┌─▶ GET /api/stats ─▶ /report
+chat Worker (each question) ─────────┴─▶ D1 `daily` (+1 per day × metric × key)
+                                          └─ cron */15 ─▶ D1 `snapshot` (7 / 30 / 90 days) ┘
+```
+
+- **Data model** (`worker/metrics.ts`): `daily(day, metric, dim, value)` `WITHOUT ROWID`, upserted with
+  `value = value + excluded.value`; `snapshot(days, json, built_at)`. Only daily totals: no raw events, IPs, user
+  agents, cookies, device storage or chat text. Every `dim` comes from a fixed allowlist (`worker/allowlist.ts`):
+  page keys, 30 countries, 9 referrer groups, the chatbot's own section ids. Days older than 90 are deleted.
+- **Metrics** (written by `visitRows` in `worker/visit.ts` and `track()` in `worker/chat.ts`):
+
+  | `metric` | `dim` | When |
+  |---|---|---|
+  | `view` | `home`, `report`, `book:<slug>`, `other` | every page change |
+  | `visit`, `country`, `device`, `ref` | `''`, ISO-2 or `other`, `phone`/`desktop`, referrer group | first page of a page load |
+  | `via` | `search` / `chat` | page opened from a search result or a chat source |
+  | `chat` | `answered`, `small_talk`, `refused`, `rate_limited`, `quota`, `busy`, `error` | every chat question |
+  | `neurons` | `''` | every model call (from token usage, `neuronsFor`) |
+  | `latency`, `latency_ms`, `topic` | `lt2`…`gt10`, `''` (sum), section id | answers only |
+- **Snapshots:** the cron reads the last 90 days once and builds the three periods (`buildSnapshot`, ~2 ms CPU for a full
+  table). Top lists use completed days and fold counts under 3 into "Other". `/api/stats?days=7|30|90` reads one
+  snapshot row and today's Neurons (2 rows), memoized for 60 s.
+- **Own quota:** the chat stops with "daily limit" before calling the model once today's Neurons reach
+  `CHAT_NEURON_BUDGET` (9,500). Best-effort: if D1 fails or takes > 800 ms the check is skipped and Cloudflare's own
+  limit applies.
+- **Limits:** every counter write goes through `WRITE_IP_LIMIT` (20/60 s) and `WRITE_GLOBAL_LIMIT` (8/60 s); over them
+  the event is simply not counted. Model calls are counted regardless (already behind the chat limits and the budget).
+  Typical worst case ≈ 60k of D1's 100k free rows written per day. Any D1 failure fails open: pages and chat keep working.
+- **Not counted:** visitors with Do Not Track or Global Privacy Control, automation (`navigator.webdriver`), ad blockers,
+  bots without JavaScript. Numbers are approximate, and the page says so.
+- **Rule:** nothing goes into D1 that is not safe to publish. A new metric or key needs a threat-model update.
+- **Tests:** `worker/metrics.test.ts`, `worker/report.test.ts` and `worker/allowlist.test.ts` run the real SQL on
+  `node:sqlite` through `worker/testDb.ts` (a D1-shaped adapter); `src/components/report/ReportView.test.tsx` and
+  `src/lib/visit.test.ts` cover the page and the beacon. Locally `npm run preview` has no Worker: `/report` shows
+  "Report data is unavailable".
 
 ## Private books (local only)
 
@@ -223,6 +267,17 @@ Connect this repo in Workers & Pages with:
 - Deploy command: `npx wrangler deploy` (serves `dist/` and the `worker/` for `/api/*`, see `wrangler.jsonc`)
 - Worker name must match `name` in `wrangler.jsonc` (`phamhuuthien`)
 
-Check the config locally with `npx wrangler deploy --dry-run` after a build. It should list the bindings `AI`,
-`CHAT_IP_LIMIT`, `CHAT_GLOBAL_LIMIT`, `ASSETS` and the `CHAT_MODEL` variable. Workers AI and rate limiting need no
-setup in the dashboard: the bindings in `wrangler.jsonc` create them.
+Check the config locally with `npx wrangler deploy --dry-run` after a build. It should list the bindings `DB`, `AI`,
+`CHAT_IP_LIMIT`, `CHAT_GLOBAL_LIMIT`, `WRITE_IP_LIMIT`, `WRITE_GLOBAL_LIMIT`, `ASSETS` and the `CHAT_MODEL` and
+`CHAT_NEURON_BUDGET` variables. Workers AI, rate limits and the cron need no dashboard setup. The D1 database
+`phamhuuthien-metrics` is created automatically on the first deploy (no `database_id` in `wrangler.jsonc`).
+
+After the first deploy with the report:
+
+1. In the dashboard (Storage & Databases → D1), confirm `phamhuuthien-metrics` exists, copy its ID into `database_id`
+   in `wrangler.jsonc` and commit, so later deploys (including a local `wrangler deploy`) always use the same database.
+2. Open a few pages, wait up to 15 minutes, then check `/report` shows them and `/api/stats?days=7` returns data.
+3. In Workers → phamhuuthien → Metrics, check the cron's CPU time stays well under 10 ms (fallback: `*/30` in
+   `triggers.crons` and "Every 15 minutes" in `ReportView.tsx`).
+4. After day 91, check that no `daily` rows older than 90 days remain:
+   `npx wrangler d1 execute phamhuuthien-metrics --remote --command "SELECT MIN(day) FROM daily"`.

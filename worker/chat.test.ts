@@ -281,7 +281,7 @@ describe('worker routing', () => {
     expect(r.status).toBe(503)
     expect(r.headers.get('Cache-Control')).toBe('no-store')
     expect(((await r.json()) as { error: { code: string } }).error.code).toBe('unavailable')
-    expect(spy).toHaveBeenCalledWith('chat: unavailable')
+    expect(spy).toHaveBeenCalledWith('api: unavailable')
     spy.mockRestore()
   })
 })

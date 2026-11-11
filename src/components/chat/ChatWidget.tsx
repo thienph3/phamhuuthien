@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { markVia } from '@/lib/visit'
 import { accentSoft, tokens } from '@/theme'
 
 export type Source = { title: string; url: string }
@@ -119,6 +120,7 @@ export function ChatWidget() {
   const openSource = (url: string) => {
     if (!isSafePath(url)) return
     const u = new URL(url, window.location.origin)
+    markVia('chat', u.pathname)
     navigate({ pathname: u.pathname, search: u.search, hash: u.hash })
     if (phone) close()
   }
