@@ -1,6 +1,10 @@
 {
   "name": "phamhuuthien",
   "compatibility_date": "2026-11-01",
+  // Build before every deploy, so `npx wrangler deploy` works even when no build command is set in Cloudflare.
+  "build": {
+    "command": "npm run build"
+  },
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application"
