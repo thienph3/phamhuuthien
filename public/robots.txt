@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+# Full book text is never on the public site; this is a hint only, not protection.
+Disallow: /books/*/read

@@ -10,7 +10,13 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "build:private": "tsc --noEmit && vite build --mode private --outDir dist-private",
+    "preview:private": "npm run build:private && vite preview --outDir dist-private --port 4174",
+    "test": "vitest run",
+    "repertoire": "node scripts/build-repertoire.ts",
+    "pipeline:build": "node scripts/pipeline-build.ts",
+    "pipeline:validate": "node scripts/pipeline-validate.ts",
+    "pipeline": "npm run pipeline:build && npm run pipeline:validate"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

@@ -9,3 +9,7 @@ dist-private/
 
 # Private content (copyrighted book text). Never commit; never deploy publicly.
 private/
+
+# Flat move lists written by `npm run repertoire`: local working data, not used by the site.
+# (colle-system.repertoire.json IS used by the site and stays committed.)
+src/content/books/*.moves.json

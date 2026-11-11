@@ -1,4 +1,4 @@
-import type { Job, NavLink, Project } from './types'
+import type { Book, Job, NavLink, Project } from './types'
 
 /** All page copy lives here. Lines marked DRAFT need your own facts. */
 export const site = {
@@ -33,6 +33,7 @@ export const site = {
 export const navLinks: NavLink[] = [
   { label: 'About', href: '/#about' },
   { label: 'Experience', href: '/#experience' },
+  { label: 'Library', href: '/#library' },
   { label: 'Contact', href: '/#contact' },
 ]
 
@@ -219,5 +220,61 @@ export const projects: Project[] = [
     summary: 'A small React component library and the site built from it, with an interactive chess opening explorer.',
     tags: ['Web', 'React', 'MUI', 'Cloudflare'],
     href: 'https://github.com/thienph3/phamhuuthien',
+  },
+]
+
+export const books: Book[] = [
+  {
+    slug: 'colle-system',
+    title: 'The Colle System',
+    author: 'George Koltanowski',
+    topics: ['chess'],
+    status: 'reading',
+    intro:
+      'Most openings ask you to memorise what to play. The Colle System asks you to understand why. You put the same pieces on the same squares almost every game, wait for the right moment to break in the centre, then turn everything towards the black king.',
+    sections: [
+      {
+        title: 'Why I picked it up',
+        paragraphs: [
+          // DRAFT: the first paragraph is your reason for reading the book. Rewrite it in your own words.
+          'I wanted a White opening I could trust without a long memory. The Colle gives you a plan from the first move: d4, Nf3, e3, Bd3, Nbd2 and castle, against almost anything Black does. The thinking goes into when and how to strike, not into remembering the twentieth move of a sharp line.',
+          'Koltanowski knew Edgard Colle, who gave the system his name, and he teaches it like a coach: short lessons built around model games, with questions at the end that make you find the move yourself.',
+        ],
+      },
+      {
+        title: 'Five core ideas',
+        numbered: true,
+        paragraphs: ['The whole repertoire follows these five ideas.'],
+        items: [
+          'The same setup every game: d4, Nf3, e3, Bd3, Nbd2 and castle. The pawn on e3 looks modest, but it is only waiting for its moment.',
+          'One break to aim for: e4. White prepares it with c3 (the classical Colle) or develops the other bishop with b3 and Bb2 (the Zukertort version). Against …c5 the book reaches for b3 a little more often than c3.',
+          'When the centre opens, attack. The bishop on d3 already points at h7. The e4 break turns up in three out of four of the book’s master games; the Bxh7+ sacrifice in about one in five.',
+          'Answer an early bishop with c4. If Black plays …Bf5 or …Bg4 before …e6, White strikes at d5 at once: every time after 2…Bf5, and in most lines after 2…Bg4.',
+          'Know what is coming. Black usually meets 1.d4 with 1…d5 and 2.Nf3 with 2…Nf6; next come 2…c5, 2…Bf5, 2…Nc6 and 2…Bg4. The tree below covers them all.',
+        ],
+      },
+      {
+        title: 'The opening tree',
+        demoHelp:
+          'Every line from the lessons and exercises, about 1,200 moves, merged into one tree. Click a move to follow it: the bar shows how many of the book’s lines play that move, and “my line” marks the lines I play. Not every move is one to copy; some show ideas the book warns against.',
+        demo: { type: 'repertoire', slug: 'colle-system' },
+      },
+      {
+        title: 'How to read the book',
+        items: [
+          'Do the questions before you look at the answers. They are the best part.',
+          'Set up a board. The lines are short and only make sense when you see the pieces move.',
+          'Keep the master games for later. The second half shows the same ideas against strong opponents, with a whole part on the King’s Indian.',
+          'Read it as a course in ideas. It is a book from 1990, not a database of best moves. I ran every White move in the tree through Stockfish: of about 590, it questions around twenty, mostly moves the book shows on purpose or mistakes from historical games.',
+        ],
+      },
+      {
+        title: 'Why it is worth it',
+        paragraphs: [
+          'If you want a White opening you can play for years with very little theory, this is a good place to start. The book teaches the plans through model games and questions, not lists of moves.',
+          'Every move in the tree comes from the book. For the explanations behind them, and the master games, read The Colle System by George Koltanowski (Chess Enterprises).',
+        ],
+      },
+    ],
   },
 ]

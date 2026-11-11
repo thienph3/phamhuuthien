@@ -1,3 +1,5 @@
+import type { GameSpec } from '@/lib/chess/moveTree'
+
 export type NavLink = { label: string; href: string }
 
 export type Project = {
@@ -19,4 +21,50 @@ export type Job = {
   highlights: Highlight[]
   /** Early-career job: shown compactly, one line, under "Earlier". */
   early?: boolean
+}
+
+export type BookStatus = 'reading' | 'read' | 'want'
+
+export type Book = {
+  slug: string
+  title: string
+  author: string
+  topics: string[]
+  status: BookStatus
+  rating?: number
+  /** Short introduction shown under the title, in your own words. */
+  intro?: string
+  /** Reader-note sections, in order. Your own words. A section can end with an interactive demo. */
+  sections?: BookSection[]
+  /** Own-words notes shown on the book page. Never paste text from the book. */
+  notes?: BookNotes
+  demos?: BookDemo[]
+}
+
+/** Optional interactive extras shown on a book page, in order. Add a variant here, then render it in BookDemo. */
+export type BookDemo =
+  | { type: 'chess-game'; game: GameSpec }
+  | { type: 'chess-pgn'; pgn: string }
+  | { type: 'chess-diagram'; fen: string; caption?: string; orientation?: 'white' | 'black' }
+  | { type: 'chess-quiz'; fen: string; question: string; answer: string; explanation?: string }
+  /** Opening tree from src/content/books/<slug>.repertoire.json (+ optional <slug>.notes.ts). */
+  | { type: 'repertoire'; slug: string; title?: string; help?: string }
+
+export type BookSection = {
+  title: string
+  paragraphs?: string[]
+  /** Points shown after the paragraphs. The words up to the first '.' or ':' are shown in bold as a lead-in. */
+  items?: string[]
+  /** Number the points (for a short sequence such as "five ideas"). */
+  numbered?: boolean
+  /** Interactive note shown at the end of the section, with an optional one-line guide. */
+  demo?: BookDemo
+  demoHelp?: string
+}
+
+export type BookNotes = {
+  why: string
+  ideas: string[]
+  applied: string
+  verdict: string
 }
