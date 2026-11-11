@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
-import { AboutSection, ContactSection, Hero, LinkButton, SiteLayout, StatusPill } from '@/components'
-import { site } from '@/content/site'
+import { AboutSection, ContactSection, ExperienceSection, Hero, LinkButton, SiteLayout, StatusPill } from '@/components'
+import { experience, site } from '@/content/site'
 
 /** Home page: only assembles components from the library and the content file. */
 export function Home() {
@@ -13,12 +13,13 @@ export function Home() {
         status={site.now.map((n) => <StatusPill key={n}>{n}</StatusPill>)}
         actions={
           <>
-            <LinkButton href="#about">See my work</LinkButton>
+            <LinkButton href="#experience">See my work</LinkButton>
             <LinkButton href="#contact" tone="ghost">Get in touch</LinkButton>
           </>
         }
       />
       <AboutSection paragraphs={site.about} skills={site.skills} />
+      <ExperienceSection jobs={experience} />
       {/* Projects section hidden for now; data stays in `projects` (site.ts). Re-add <ProjectsSection projects={projects} /> and its nav link to show it. */}
       <ContactSection note={site.contactNote} email={site.email} github={site.github} linkedin={site.linkedin} />
     </SiteLayout>

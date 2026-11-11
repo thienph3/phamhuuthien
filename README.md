@@ -25,7 +25,7 @@ src/
     layout/     PageContainer, Section, SiteHeader, SiteFooter, SiteLayout, SkipLink
     ui/         LinkButton, Eyebrow, Tag/TagList, StatusPill, ThemeToggle
     cards/      ContentCard, ProjectCard
-    sections/   Hero, AboutSection, ProjectsSection, ContactSection
+    sections/   Hero, AboutSection, ExperienceSection, ProjectsSection, ContactSection
   content/      all page copy and data (site.ts) and its types
   pages/        pages only assemble components + content (Home, NotFound)
   App.tsx       route table: add new pages here
@@ -34,6 +34,9 @@ src/
 To change text, edit `src/content/site.ts`. Lines marked `DRAFT` there still need your own facts.
 New colours or spacing belong in `src/theme/tokens.ts`, not in components.
 
+- **Experience:** `experience` in `site.ts`, most recent first. Jobs with `early: true` are shown
+  compactly under "Earlier". Keep former employers' work at CV level: design and impact only, no
+  internal data, features or images.
 - **Projects:** `projects` in `site.ts`. The section is hidden on the home page for now; re-add
   `<ProjectsSection projects={projects} />` in `src/pages/Home.tsx` and its link in `navLinks`.
 
