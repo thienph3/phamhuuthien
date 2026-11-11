@@ -5,7 +5,7 @@ import { books } from '../src/content/site.ts'
  * visitor-supplied text can ever appear on the public report (plan W4). Used on write and again when building snapshots.
  */
 export const BOOK_SLUGS = new Set(books.filter((b) => b.sections || b.notes || b.demos).map((b) => b.slug))
-export const PAGE_KEYS = new Set(['home', 'report', 'other', ...[...BOOK_SLUGS].map((s) => `book:${s}`)])
+export const PAGE_KEYS = new Set(['home', 'cv', 'report', 'other', ...[...BOOK_SLUGS].map((s) => `book:${s}`)])
 
 export const REFS = ['direct', 'linkedin', 'google', 'github', 'facebook', 'bing', 'duckduckgo', 'x', 'other'] as const
 export const REF_KEYS = new Set<string>(REFS)
@@ -18,6 +18,7 @@ export function pageKey(path: unknown): string | undefined {
   if (typeof path !== 'string' || path.length > 200) return undefined
   if (path === '/') return 'home'
   if (path === '/report') return 'report'
+  if (path === '/cv') return 'cv'
   const m = /^\/books\/([a-z0-9-]{1,40})$/.exec(path)
   return m && BOOK_SLUGS.has(m[1]) ? `book:${m[1]}` : 'other'
 }

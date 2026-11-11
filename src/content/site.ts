@@ -1,4 +1,5 @@
-import type { Award, Book, Education, Job, NavLink, Project, Publication } from './types'
+import { anchors } from '../lib/anchors.ts'
+import type { Award, Book, Education, Job, NavLink, Proof, Project, Publication, Story, Theme, TimelineExtra } from './types'
 
 /** All page copy lives here. Lines marked DRAFT need your own facts. */
 export const site = {
@@ -27,13 +28,93 @@ export const site = {
     { label: 'Product', items: ['TypeScript', 'React', 'Next.js', 'Flutter', 'Supabase'] },
   ],
   contactNote: 'Happy to talk about data, ML and building teams.',
+  // DRAFT copy from the brand mockup (2026-11-11); the owner will refine the words. Facts are from the verified content.
+  pov: 'Most data problems are design problems. Get the structure right, and the pipelines, dashboards and models on top get simple.',
+  cvSummary: 'Data and ML engineer with ten years across data platforms, ML and backend, often the first one in. I lead a team of seven ML engineers at Vinamilk, working on a chatbot, search, document AI and OCR.',
+  languages: [
+    { label: 'Vietnamese', level: 'native' },
+    { label: 'English', level: 'B1 (intermediate), improving every day' },
+  ],
+  /** The CV as a PDF in public/, made by `npm run cv:pdf` from the /cv page. */
+  cvPdf: '/Thien-Pham-CV.pdf',
 }
 
+/** Home page proof numbers. Each one is stated in Experience. */
+export const proof: Proof[] = [
+  { value: '5–7 s', label: 'chatbot answers, down from 15–20 s (Vinamilk)' },
+  { value: '75%', label: 'less time for customer-data metric queries (Tiki)' },
+  { value: '1 YAML file', label: 'to bring a new source into the warehouse (be)' },
+  { value: '7', label: 'ML engineers I lead today, across four projects (Vinamilk)' },
+]
+
+/** Home page: what I'm known for. DRAFT (owner to confirm the three). */
+export const themes: Theme[] = [
+  {
+    title: 'Zero to production',
+    text: 'I like being the first one in: the only data engineer at be, the first head of data at Koina, the first backend engineer on my team at FE Credit.',
+    link: { label: 'See the be platform', href: `/cv#${anchors.highlight('be', 'Config-driven ELT platform')}` },
+  },
+  {
+    title: 'Data is a design problem',
+    text: 'At MoMo every mini app tracked events its own way. The fix was one event structure for all of them, not another tool.',
+    link: { label: 'See MoMo’s event structure', href: `/cv#${anchors.highlight('MoMo', 'One event structure for every mini app')}` },
+  },
+  {
+    title: 'Speed people feel',
+    text: 'A chatbot that answers in 5–7 seconds instead of 15–20, and audience queries that take 75% less time. Speed is a feature users notice.',
+    link: { label: 'See the chatbot speed-up', href: `/cv#${anchors.highlight('Vinamilk', 'Chatbot answers in 5–7 seconds on average, down from 15–20')}` },
+  },
+]
+
+/** Home page: selected work, each linking to its CV entry. DRAFT (owner to confirm the four). */
+export const stories: Story[] = [
+  {
+    company: 'Vinamilk',
+    when: '2025',
+    title: 'Chatbot answers in 5–7 seconds, down from 15–20',
+    text: 'An LLM alone was too slow to answer. I added ML models to the chatbot’s pipeline.',
+    result: 'Average answer time: 15–20 s → 5–7 s.',
+    href: `/cv#${anchors.highlight('Vinamilk', 'Chatbot answers in 5–7 seconds on average, down from 15–20')}`,
+  },
+  {
+    company: 'MoMo',
+    when: '2022–2023',
+    title: 'One event structure for every mini app',
+    text: 'Each mini app inside the super app tracked events its own way. I designed one standard, and my team built funnel reporting on top of it.',
+    result: 'Internal users set up a mini app’s funnel with a few settings.',
+    href: `/cv#${anchors.highlight('MoMo', 'One event structure for every mini app')}`,
+  },
+  {
+    company: 'Tiki',
+    when: '2021',
+    title: 'A customer data platform redesigned in six months',
+    text: 'I rebuilt the customer space into layers of filters, so the SQL builder reads raw tables O(n) times instead of O(n²).',
+    result: 'Metric queries: 75% less time. In production.',
+    href: `/cv#${anchors.highlight('Tiki', 'Customer data platform redesign')}`,
+  },
+  {
+    company: 'be',
+    when: '2018–2021',
+    title: 'From the only data engineer to the first ML model',
+    text: 'A config-driven ELT platform where one YAML file adds a source, then an XGBoost model that picks the drivers most likely to accept a ride.',
+    result: 'Both in production.',
+    href: `/cv#${anchors.highlight('be', 'Config-driven ELT platform')}`,
+  },
+]
+
+/** CV timeline: study and chess, next to the jobs. Approximate, by year. */
+export const timelineExtras: TimelineExtra[] = [
+  { lane: 'Chess', label: 'Chess, aiming to go pro', from: 2007, to: 2012 },
+  { lane: 'Study', label: 'HCMC University of Education', from: 2012, to: 2016.5 },
+  { lane: 'Study', label: 'Master’s coursework (not completed)', from: 2020, to: 2025, dashed: true },
+]
+
 export const navLinks: NavLink[] = [
-  { label: 'About', href: '/#about' },
-  { label: 'Experience', href: '/#experience' },
+  { label: 'Work', href: '/#work' },
+  { label: 'This site', href: '/#site' },
   { label: 'Library', href: '/#library' },
-  { label: 'Contact', href: '/#contact' },
+  { label: 'About', href: '/#about' },
+  { label: 'CV', href: '/cv' },
 ]
 
 /**
@@ -43,6 +124,7 @@ export const navLinks: NavLink[] = [
 export const experience: Job[] = [
   {
     company: 'Vinamilk',
+    timeline: { from: 2025, to: 2026.9, track: 'ml' },
     companyNote: 'Dairy, Vietnam',
     period: '2025 – now',
     role: 'Senior Data Engineer (formal title) · leads a team of seven ML engineers',
@@ -67,6 +149,7 @@ export const experience: Job[] = [
   },
   {
     company: 'FE Credit',
+    timeline: { from: 2023.5, to: 2024.95, track: 'backend' },
     companyNote: 'Consumer finance, Vietnam',
     period: '2023 – 2024',
     role: 'Senior Staff Backend Engineer',
@@ -80,6 +163,7 @@ export const experience: Job[] = [
   },
   {
     company: 'MoMo',
+    timeline: { from: 2022.6, to: 2023.5, track: 'data' },
     companyNote: 'E-wallet and super app, Vietnam',
     period: '2022 – 2023',
     role: 'Data Engineering Lead',
@@ -98,6 +182,7 @@ export const experience: Job[] = [
   },
   {
     company: 'Koina',
+    timeline: { from: 2021.7, to: 2022.6, track: 'data' },
     companyNote: 'Startup building a digital marketplace for Vietnamese agriculture',
     period: '2021 – 2022',
     role: 'Head of Data',
@@ -117,6 +202,7 @@ export const experience: Job[] = [
   },
   {
     company: 'Tiki',
+    timeline: { from: 2021.25, to: 2021.7, track: 'data' },
     companyNote: 'E-commerce, Vietnam',
     period: '2021',
     role: 'Senior Software Engineer',
@@ -131,6 +217,7 @@ export const experience: Job[] = [
   },
   {
     company: 'be',
+    timeline: { from: 2018.5, to: 2021.25, track: 'data', track2: 'ml' },
     companyNote: 'beGroup JSC, ride-hailing, Vietnam',
     period: '2018 – 2021',
     role: 'Senior Data Engineer, then Senior ML Engineer',
@@ -157,6 +244,7 @@ export const experience: Job[] = [
   },
   {
     company: 'GHN',
+    timeline: { from: 2018, to: 2018.5, track: 'data' },
     early: true,
     companyNote: 'Giao Hàng Nhanh, e-commerce delivery, Vietnam',
     period: '2018',
@@ -171,6 +259,7 @@ export const experience: Job[] = [
   },
   {
     company: 'i3 Solution',
+    timeline: { from: 2017, to: 2018, track: 'software' },
     early: true,
     companyNote: 'Healthcare software, Vietnam',
     period: '2017',
@@ -185,6 +274,7 @@ export const experience: Job[] = [
   },
   {
     company: 'FPT Software',
+    timeline: { from: 2016, to: 2017, track: 'software' },
     early: true,
     companyNote: 'IT outsourcing, Vietnam',
     period: '2016',

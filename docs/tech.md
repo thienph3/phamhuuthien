@@ -77,3 +77,13 @@ Checked against installed packages on 2026-11-11. Versions are pinned in `packag
 - **`preview_urls`** (boolean, default false) in the Wrangler schema (`node_modules/wrangler/config-schema.json`, 4.157.0).
 - **Tests:** `node:sqlite` (`DatabaseSync`, Node 22.23, experimental warning) supports `WITHOUT ROWID` and
   `ON CONFLICT … DO UPDATE SET value = value + excluded.value`; `worker/testDb.ts` wraps it in the D1 shape.
+
+## CV PDF: puppeteer-core + Vite preview (verified 2026-11-11)
+
+- **puppeteer-core 25.16.0** (devDependency, exact pin; 25.17.0 was < 7 days old). No bundled browser: pass
+  `executablePath` (Edge or Chrome on the machine). `const browser = await puppeteer.launch({ executablePath, headless: true })`,
+  `const page = await browser.newPage(); await page.goto(url, { waitUntil: 'networkidle0' })`,
+  `await page.pdf({ path, format: 'A4', printBackground: true, preferCSSPageSize: true })` (`PDFOptions` in
+  `node_modules/puppeteer-core/lib/types.d.ts`: `format?: PaperFormat`, `printBackground?: boolean`, `preferCSSPageSize?: boolean`).
+- **Vite `preview(inlineConfig)`** → `PreviewServer` with `resolvedUrls` (`{ local: string[] }`) and `close()`
+  (`node_modules/vite/dist/node/index.d.ts`, Vite 8.3.5). Used to serve `dist/` for the PDF script.

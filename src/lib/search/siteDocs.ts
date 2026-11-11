@@ -33,36 +33,36 @@ export function buildSiteDocs({ site, experience, books, education = [], awards 
     if (job.early) {
       docs.push({
         id: anchors.job(job.company),
-        page: 'Home',
+        page: 'CV',
         section: 'Experience · Earlier',
         title: job.company,
         text: join(job.companyNote, job.role, job.period, ...job.highlights.map((h) => join(h.title, h.text, ...(h.tags ?? [])))),
-        url: `/#${anchors.job(job.company)}`,
+        url: `/cv#${anchors.job(job.company)}`,
       })
       continue
     }
     for (const h of job.highlights)
       docs.push({
         id: anchors.highlight(job.company, h.title),
-        page: 'Home',
+        page: 'CV',
         section: `Experience · ${job.company}`,
         title: h.title,
         text: join(h.text, job.role, job.period, ...(h.tags ?? [])),
-        url: `/#${anchors.highlight(job.company, h.title)}`,
+        url: `/cv#${anchors.highlight(job.company, h.title)}`,
       })
   }
   for (const e of education)
-    docs.push({ id: anchors.education(e.school), page: 'Home', section: 'Education', title: `${e.title} · ${e.school}`, text: `${e.when}. Study: ${e.title} at ${e.school}. ${e.text}`, url: `/#${anchors.education(e.school)}` })
+    docs.push({ id: anchors.education(e.school), page: 'CV', section: 'Education', title: `${e.title} · ${e.school}`, text: `${e.when}. Study: ${e.title} at ${e.school}. ${e.text}`, url: `/cv#${anchors.education(e.school)}` })
   for (const a of awards)
-    docs.push({ id: anchors.award(a.org), page: 'Home', section: 'Awards', title: `${a.title} · ${a.org}`, text: `${a.when} award: ${a.title}, ${a.org}. ${a.text}`, url: `/#${anchors.award(a.org)}` })
+    docs.push({ id: anchors.award(a.org), page: 'CV', section: 'Awards', title: `${a.title} · ${a.org}`, text: `${a.when} award: ${a.title}, ${a.org}. ${a.text}`, url: `/cv#${anchors.award(a.org)}` })
   for (const p of publications)
     docs.push({
       id: anchors.publication(p.title),
-      page: 'Home',
+      page: 'CV',
       section: 'Publications',
       title: p.title,
       text: `Paper published ${p.year} in ${p.venue}${p.publisher === 'Journal' ? '' : ` (${p.publisher})`}. Authors: ${p.authors.join(', ')}. DOI ${p.doi}.`,
-      url: `/#${anchors.publication(p.title)}`,
+      url: `/cv#${anchors.publication(p.title)}`,
     })
   docs.push({
     id: 'library',

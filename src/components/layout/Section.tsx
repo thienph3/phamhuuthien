@@ -22,7 +22,8 @@ export function Section({ id, eyebrow, title, description, prose = false, childr
       <PageContainer>
         <Box sx={prose ? { maxWidth: tokens.proseWidth } : undefined}>
         <Eyebrow>{eyebrow}</Eyebrow>
-        <Typography id={`${id}-title`} variant="h2" component="h2" sx={{ mb: description ? 1 : 3 }}>
+        {/* In the printed CV the eyebrow is the heading; the long title is screen-only (theme print styles). */}
+        <Typography id={`${id}-title`} className="section-title" variant="h2" component="h2" sx={{ mb: description ? 1 : 3 }}>
           {title}
         </Typography>
         {description && (

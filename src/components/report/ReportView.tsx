@@ -18,7 +18,7 @@ export type ReportState = { status: 'loading' } | { status: 'error' } | { status
 const NEURONS_PER_ANSWER = 105
 
 const BOOK_TITLES = new Map(books.map((b) => [`book:${b.slug}`, b.title]))
-const PAGE_NAMES: Record<string, string> = { home: 'Home', report: 'Report', other: 'Other' }
+const PAGE_NAMES: Record<string, string> = { home: 'Home', cv: 'CV', report: 'Report', other: 'Other' }
 const REF_NAMES: Record<string, string> = { direct: 'Direct', linkedin: 'LinkedIn', google: 'Google', github: 'GitHub', facebook: 'Facebook', bing: 'Bing', duckduckgo: 'DuckDuckGo', x: 'X', other: 'Other' }
 const regions = typeof Intl !== 'undefined' && 'DisplayNames' in Intl ? new Intl.DisplayNames(['en'], { type: 'region' }) : undefined
 export const pageName = (k: string) => BOOK_TITLES.get(k) ?? PAGE_NAMES[k] ?? 'Other'

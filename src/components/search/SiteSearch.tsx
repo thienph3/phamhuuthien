@@ -36,6 +36,9 @@ function snippet(text: string, terms: string[]): string {
   return (start ? '…' : '') + text.slice(start, start + 170) + (start + 170 < text.length ? '…' : '')
 }
 
+/** `window.dispatchEvent(new Event(OPEN_SEARCH_EVENT))` opens and focuses the search box. */
+export const OPEN_SEARCH_EVENT = 'site:open-search'
+
 const isTyping = (el: Element | null) => !!el && (el.matches('input, textarea, select') || (el as HTMLElement).isContentEditable)
 
 /**
@@ -63,8 +66,17 @@ export function SiteSearch({ docs }: { docs: SearchDoc[] }) {
         setTimeout(() => input.current?.focus(), 0)
       }
     }
+    // Other parts of the page (e.g. "Try search") open the search box with this event.
+    const onOpen = () => {
+      setExpanded(true)
+      setTimeout(() => input.current?.focus(), 0)
+    }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    window.addEventListener(OPEN_SEARCH_EVENT, onOpen)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener(OPEN_SEARCH_EVENT, onOpen)
+    }
   }, [])
 
   const close = () => {

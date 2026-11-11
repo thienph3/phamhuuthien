@@ -3,8 +3,8 @@ import { render, screen, within } from '@testing-library/react'
 import { ExperienceSection } from './ExperienceSection'
 
 const jobs = [
-  { company: 'NewCo', role: 'Software Engineer', period: '2024 – now', highlights: [{ title: 'Platform redesign', text: 'Made it faster.', status: 'production' as const }] },
-  { company: 'OldCo', role: 'Data Engineer', highlights: [{ title: 'Prototype', text: 'Tried an idea.', status: 'prototype' as const, tags: ['ML'] }] },
+  { company: 'NewCo', timeline: { from: 2020, to: 2021, track: 'data' as const }, role: 'Software Engineer', period: '2024 – now', highlights: [{ title: 'Platform redesign', text: 'Made it faster.', status: 'production' as const }] },
+  { company: 'OldCo', timeline: { from: 2020, to: 2021, track: 'data' as const }, role: 'Data Engineer', highlights: [{ title: 'Prototype', text: 'Tried an idea.', status: 'prototype' as const, tags: ['ML'] }] },
 ]
 
 describe('ExperienceSection', () => {
@@ -21,7 +21,7 @@ describe('ExperienceSection', () => {
     expect(within(screen.getByText('Tried an idea.').closest('li')!).getByText('Prototype', { selector: '.MuiChip-label' })).toBeInTheDocument()
   })
   it('shows early-career jobs compactly under Earlier', () => {
-    const withEarly = [...jobs, { company: 'FirstCo', role: 'Engineer', period: '2016', early: true, highlights: [{ title: 'Learned process', text: 'Disciplined delivery.' }] }]
+    const withEarly = [...jobs, { company: 'FirstCo', timeline: { from: 2020, to: 2021, track: 'data' as const }, role: 'Engineer', period: '2016', early: true, highlights: [{ title: 'Learned process', text: 'Disciplined delivery.' }] }]
     render(<ThemeProvider theme={createTheme()}><ExperienceSection jobs={withEarly} /></ThemeProvider>)
     expect(screen.getByRole('heading', { level: 3, name: 'Earlier' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { level: 3, name: 'FirstCo' })).not.toBeInTheDocument()

@@ -12,6 +12,14 @@ export type Project = {
 /** One thing done in a job. `status` marks whether it shipped. */
 export type Highlight = { title: string; text: string; tags?: string[]; status?: 'production' | 'prototype' }
 
+export type Track = 'software' | 'data' | 'ml' | 'backend'
+
+/**
+ * Where a job sits on the CV timeline: fractional years, approximate until months are known (e.g. 2018.5 = mid-2018).
+ * `track2` splits the bar when the role changed (be: data, then ML).
+ */
+export type TimelineSpan = { from: number; to: number; track: Track; track2?: Track }
+
 /** A job, most recent first in the list. `period` is free text, e.g. '2022 – 2023'. */
 export type Job = {
   company: string
@@ -21,7 +29,18 @@ export type Job = {
   highlights: Highlight[]
   /** Early-career job: shown compactly, one line, under "Earlier". */
   early?: boolean
+  timeline: TimelineSpan
 }
+
+/** A non-job bar on the CV timeline (study, chess). `dashed` marks something not completed. */
+export type TimelineExtra = { lane: 'Study' | 'Chess'; label: string; from: number; to: number; dashed?: boolean }
+
+/** Home page: a number with what it measures. */
+export type Proof = { value: string; label: string }
+/** Home page: something I keep doing, with the work that shows it (`href` points at its CV entry). */
+export type Theme = { title: string; text: string; link: { label: string; href: string } }
+/** Home page: one piece of work told as problem → what I did → result. */
+export type Story = { company: string; when: string; title: string; text: string; result: string; href: string }
 
 /** A school or programme. `title` says exactly what was studied, including "(not completed)" when it was not finished. */
 export type Education = { when: string; title: string; school: string; text: string }

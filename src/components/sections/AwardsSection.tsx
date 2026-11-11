@@ -13,7 +13,7 @@ const when = { fontFamily: tokens.mono, color: 'text.secondary', fontSize: '0.87
 
 function Group({ title, first = false, children }: { title: string; first?: boolean; children: ReactNode }) {
   return (
-    <Box sx={first ? undefined : { mt: 4, pt: 4, borderTop: 1, borderColor: 'divider' }}>
+    <Box className="cv-group" sx={first ? undefined : { mt: 4, pt: 4, borderTop: 1, borderColor: 'divider' }}>
       <Typography variant="h3" component="h3" sx={{ mb: 2 }}>{title}</Typography>
       <Box component="ol" sx={{ listStyle: 'none', p: 0, m: 0, display: 'grid', gap: 2.5 }}>{children}</Box>
     </Box>
@@ -41,7 +41,7 @@ function Authors({ p }: { p: Publication }) {
 export function AwardsSection({ education, awards, publications }: { education: Education[]; awards: Award[]; publications: Publication[] }) {
   return (
     <Section id="awards" eyebrow="Education, awards & publications" title="Where I studied, and what came of it">
-      <Typography color="text.secondary" sx={{ maxWidth: tokens.proseWidth, mt: -1.5, mb: 4 }}>
+      <Typography className="cv-detail" color="text.secondary" sx={{ maxWidth: tokens.proseWidth, mt: -1.5, mb: 4 }}>
         A maths class at Lê Quý Đôn High School for the Gifted in Khánh Hòa, then software engineering at HCMC University
         of Education, where I competed in programming contests and co-authored papers on support vector machines.
       </Typography>
@@ -51,7 +51,7 @@ export function AwardsSection({ education, awards, publications }: { education: 
             <Typography sx={when}>{e.when}</Typography>
             <Box>
               <Typography sx={{ fontWeight: 650 }}>{e.title} · {e.school}</Typography>
-              <Typography color="text.secondary" sx={{ maxWidth: tokens.proseWidth }}>{e.text}</Typography>
+              <Typography className="cv-detail" color="text.secondary" sx={{ maxWidth: tokens.proseWidth }}>{e.text}</Typography>
             </Box>
           </Box>
         ))}
@@ -62,7 +62,8 @@ export function AwardsSection({ education, awards, publications }: { education: 
             <Typography sx={when}>{a.when}</Typography>
             <Box>
               <Typography sx={{ fontWeight: 650 }}>{a.title} · {a.org}</Typography>
-              <Typography color="text.secondary" sx={{ maxWidth: tokens.proseWidth }}>
+              {/* The printed CV keeps only awards with a public record to check (e.g. the FIDE profile). */}
+              <Typography className={a.link ? undefined : 'cv-detail'} color="text.secondary" sx={{ maxWidth: tokens.proseWidth }}>
                 {a.text}
                 {a.link && <> <Link href={a.link.href} underline="always">{a.link.label}</Link></>}
               </Typography>
@@ -78,7 +79,7 @@ export function AwardsSection({ education, awards, publications }: { education: 
               <Typography component="h4" sx={{ fontWeight: 650, fontSize: '1rem', m: 0 }}>{p.title}</Typography>
               <Typography color="text.secondary"><Authors p={p} /></Typography>
               <Typography color="text.secondary" sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1, mt: 0.25 }}>
-                <Box component="span" sx={{ fontFamily: tokens.mono, fontSize: '0.72rem', border: 1, borderColor: p.publisher === 'IEEE' ? 'primary.main' : 'divider', color: p.publisher === 'IEEE' ? 'primary.dark' : 'text.secondary', borderRadius: 999, px: 1 }}>
+                <Box component="span" className="cv-detail" sx={{ fontFamily: tokens.mono, fontSize: '0.72rem', border: 1, borderColor: p.publisher === 'IEEE' ? 'primary.main' : 'divider', color: p.publisher === 'IEEE' ? 'primary.dark' : 'text.secondary', borderRadius: 999, px: 1 }}>
                   {p.publisher}
                 </Box>
                 <span>{p.venue} · <Link href={`https://doi.org/${p.doi}`} underline="always" aria-label={`DOI for ${p.title}`}>DOI</Link></span>
@@ -87,7 +88,7 @@ export function AwardsSection({ education, awards, publications }: { education: 
           </Box>
         ))}
       </Group>
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>Author lists as published; my name in bold.</Typography>
+      <Typography className="cv-detail" variant="body2" color="text.secondary" sx={{ mt: 3 }}>Author lists as published; my name in bold.</Typography>
     </Section>
   )
 }

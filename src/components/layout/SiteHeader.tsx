@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import Toolbar from '@mui/material/Toolbar'
 import type { ReactNode } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
 import type { NavLink } from '@/content/types'
 import { PageContainer } from './PageContainer'
 
@@ -20,7 +21,7 @@ export function SiteHeader({ brand, links, actions }: SiteHeaderProps) {
           </Link>
           <Box component="nav" aria-label="Main" sx={{ display: 'flex', gap: { xs: 2, sm: 3 }, overflowX: 'auto', whiteSpace: 'nowrap', scrollbarWidth: 'none', '&::-webkit-scrollbar': { display: 'none' } }}>
             {links.map((l) => (
-              <Link key={l.href} href={l.href} underline="none" color="text.secondary" sx={{ py: 1.5, '&:hover': { color: 'primary.main' } }}>
+              <Link key={l.href} {...(l.href.startsWith('/#') ? { href: l.href } : { component: RouterLink, to: l.href })} underline="none" color="text.secondary" sx={{ py: 1.5, '&:hover': { color: 'primary.main' } }}>
                 {l.label}
               </Link>
             ))}

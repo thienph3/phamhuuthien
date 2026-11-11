@@ -7,6 +7,7 @@ describe('pageKey', () => {
   it.each([
     ['/', 'home'],
     ['/report', 'report'],
+    ['/cv', 'cv'],
     ['/books/colle-system', 'book:colle-system'],
     ['/books/unknown-book', 'other'],
     ['/books/../x', 'other'],

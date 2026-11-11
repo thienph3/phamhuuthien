@@ -26,7 +26,9 @@ src/
     ui/         LinkButton, Eyebrow, Tag/TagList, StatusPill, ThemeToggle, SearchField,
                 FilterChips, EmptyState, Prose (long-form HTML/MDX text)
     cards/      ContentCard, ProjectCard, BookCard, BookCover
-    sections/   Hero, AboutSection, ExperienceSection, AwardsSection, ProjectsSection, LibrarySection, ContactSection
+    sections/   Hero, AboutSection, ExperienceSection, AwardsSection, ProjectsSection, LibrarySection, ContactSection,
+                BrandSections (ProofStrip, KnownForSection, SelectedWorkSection, BuiltIntoSiteSection)
+    cv/         CareerTimeline (career at a glance on /cv)
     books/      BookDetail, BookNotes, BookDemo, BookReader, RepertoireDemo
     search/     SiteSearch (header search box + dropdown), SearchHighlight
     chat/       ChatWidget ("Ask about Thien" button + chat panel, mounted in App.tsx)
@@ -35,16 +37,24 @@ src/
                 RepertoireExplorer (+ BoardView, MoveList, GameControls)
   content/      all page copy and data (site.ts) and its types; books/ holds generated move data
   lib/          pure helpers with tests: book filtering, private books, anchors, lib/search, lib/chess
-  pages/        pages only assemble components + content (Home, BookPage, BookReaderPage, Report, NotFound)
+  pages/        pages only assemble components + content (Home, Cv, BookPage, BookReaderPage, Report, NotFound)
   App.tsx       route table: add new pages here
-scripts/        build-repertoire and the validation pipeline (Node, run locally)
+scripts/        build-repertoire, the validation pipeline and cv-pdf (Node, run locally)
 worker/         the Cloudflare Worker: runs only for /api/* (chatbot, report beacon, stats) and the report cron
 ```
+
+**Two pages, two jobs.** The home page (`/`) is the brand: hero with a point of view (`site.pov`), proof numbers
+(`proof`), what I'm known for (`themes`), selected work (`stories`), the site's own features, library, about and contact.
+The full record is on `/cv`: career timeline, every job, education, awards, publications, skills and languages, with a PDF
+download. Themes and stories link to their entry on `/cv`; keep every number in them backed by the Experience text (a
+test checks the proof numbers).
 
 To change text, edit `src/content/site.ts`. Lines marked `DRAFT` there still need your own facts.
 New colours or spacing belong in `src/theme/tokens.ts`, not in components.
 
-- **Experience:** `experience` in `site.ts`, most recent first. Jobs with `early: true` are shown
+- **Experience:** `experience` in `site.ts`, most recent first, shown on `/cv`. Each job has a `timeline` span
+  (fractional years, approximate: `2018.5` is mid-2018; `track2` splits a bar when the role changed); study and chess
+  bars are `timelineExtras`. Jobs with `early: true` are shown
   compactly under "Earlier". Keep former employers' work at CV level: design and impact only, no
   internal data, features or images.
 - **Projects:** `projects` in `site.ts`. The section is hidden on the home page for now; re-add
@@ -55,6 +65,22 @@ New colours or spacing belong in `src/theme/tokens.ts`, not in components.
   Experience. Add only what a certificate or a public record backs. Papers keep the author list exactly as published;
   `me` is the index of my name (shown in bold), and `doi` is the bare DOI (linked via doi.org). Both are in site search
   and the chatbot's sources automatically.
+
+## CV page and PDF (`/cv`)
+
+`/cv` is the recruiter view, and **Download PDF** serves `public/Thien-Pham-CV.pdf`, made from this same page:
+
+```bash
+npm run cv:pdf   # builds, serves dist/ with Vite preview, prints /cv to public/Thien-Pham-CV.pdf (A4)
+```
+
+- Needs a local Edge or Chrome (`CHROME_PATH`, or the usual install paths). Uses `puppeteer-core` (dev only).
+- The print stylesheet (`@media print` in `src/theme/theme.ts`) turns the page into a compact CV: no header, buttons or
+  long descriptions (`.cv-detail`); each job keeps its result titles. Browser **Print** gives the same layout.
+- The script fails if the CV grows past 2 pages and stores a fingerprint in `scripts/cv-pdf.hash`.
+  `src/pages/Cv.test.tsx` fails when CV content or its styling changed without re-running `npm run cv:pdf`, so the
+  download never goes stale. Commit the PDF and the hash together.
+- Cloudflare's build does not make the PDF (no browser there); it ships the committed file.
 
 ## Site search
 

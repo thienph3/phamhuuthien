@@ -19,6 +19,8 @@ type Entry =
   | { kind: 'alert'; tone: 'warn' | 'error'; title: string; text: string }
 
 export const MAX_LENGTH = 500
+/** `window.dispatchEvent(new Event(OPEN_CHAT_EVENT))` opens the chat panel. */
+export const OPEN_CHAT_EVENT = 'site:open-chat'
 const CLIENT_TIMEOUT_MS = 30_000
 const SUGGESTIONS = ['What does Thien do now?', 'What did he build at be?', 'How did he speed up the chatbot?', 'What did he learn from The Colle System?']
 const WELCOME = 'Hi! I can answer questions about Thien’s work, experience and reading notes on this site. What would you like to know?'
@@ -86,6 +88,12 @@ export function ChatWidget() {
   useEffect(() => {
     if (open) input.current?.focus()
   }, [open])
+  // Other parts of the page (e.g. "Ask my site about me") open the chat with this event.
+  useEffect(() => {
+    const onOpen = () => setOpen(true)
+    window.addEventListener(OPEN_CHAT_EVENT, onOpen)
+    return () => window.removeEventListener(OPEN_CHAT_EVENT, onOpen)
+  }, [])
   useEffect(() => {
     log.current?.scrollTo?.({ top: log.current.scrollHeight })
   }, [entries, waiting])

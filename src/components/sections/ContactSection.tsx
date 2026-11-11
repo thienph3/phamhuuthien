@@ -3,10 +3,10 @@ import Typography from '@mui/material/Typography'
 import { Section } from '../layout/Section'
 import { LinkButton } from '../ui/LinkButton'
 
-export type ContactSectionProps = { note: string; email?: string; github?: string; linkedin?: string }
+export type ContactSectionProps = { note: string; email?: string; github?: string; linkedin?: string; cvPdf?: string }
 
 /** Contact call to action. Buttons only appear for the links you have set. */
-export function ContactSection({ note, email, github, linkedin }: ContactSectionProps) {
+export function ContactSection({ note, email, github, linkedin, cvPdf }: ContactSectionProps) {
   const links = [
     email && { href: `mailto:${email}`, label: 'Email me' },
     linkedin && { href: linkedin, label: 'LinkedIn' },
@@ -17,6 +17,7 @@ export function ContactSection({ note, email, github, linkedin }: ContactSection
       <Typography color="text.secondary" sx={{ mb: 3 }}>{note}</Typography>
       <Stack direction="row" useFlexGap spacing={2} sx={{ flexWrap: 'wrap' }}>
         {links.map((l, i) => <LinkButton key={l.label} href={l.href} tone={i === 0 ? 'primary' : 'ghost'}>{l.label}</LinkButton>)}
+        {cvPdf && <LinkButton href={cvPdf} tone="ghost" download>Download CV (PDF)</LinkButton>}
       </Stack>
     </Section>
   )

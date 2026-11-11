@@ -4,6 +4,7 @@ import { ChatWidget } from './components/chat/ChatWidget'
 import { sendVisit } from './lib/visit'
 import { BookPage } from './pages/BookPage'
 import { BookReaderPage } from './pages/BookReaderPage'
+import { Cv } from './pages/Cv'
 import { Home } from './pages/Home'
 import { NotFound } from './pages/NotFound'
 import { Report } from './pages/Report'
@@ -22,6 +23,7 @@ export function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/report" element={<Report />} />
+        <Route path="/cv" element={<Cv />} />
         <Route path="/books/:slug" element={<BookPage />} />
         <Route path="/books/:slug/read" element={<BookReaderPage />} />
         <Route path="/books/:slug/read/:chapter" element={<BookReaderPage />} />
