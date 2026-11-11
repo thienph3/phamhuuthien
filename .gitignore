@@ -1,6 +1,11 @@
 .DS_Store
 node_modules/
 .wrangler/
+dist/
+dist-private/
 
 # Kiro IDE
 .kiro/
+
+# Private content (copyrighted book text). Never commit; never deploy publicly.
+private/
