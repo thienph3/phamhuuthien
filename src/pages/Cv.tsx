@@ -3,7 +3,7 @@ import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import { useEffect } from 'react'
-import { AwardsSection, ExperienceSection, PageContainer, SiteLayout } from '@/components'
+import { AwardsSection, ExperienceSection, PageContainer, ProfilePhoto, SiteLayout } from '@/components'
 import { CareerTimeline } from '@/components/cv/CareerTimeline'
 import { awards, education, experience, publications, site, timelineExtras } from '@/content/site'
 import { tokens } from '@/theme'
@@ -26,16 +26,19 @@ export function Cv() {
     <SiteLayout>
       <PageContainer className="cv-page" sx={{ pt: { xs: 5, md: 7 } }}>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: 3 }}>
-          <Box>
-            <Typography variant="h1" sx={{ fontSize: 'clamp(2rem, 5vw, 2.8rem)' }}>
-              {site.name} <Box component="span" sx={{ fontWeight: 500, color: 'text.secondary', fontSize: '0.6em' }}>({site.localName})</Box>
-            </Typography>
-            <Typography sx={{ color: 'primary.dark', fontWeight: 650, my: 0.5 }}>{site.role}</Typography>
-            <Typography variant="body2" color="text.secondary">
-              {site.email && <><Link href={`mailto:${site.email}`} color="inherit">{site.email}</Link> · </>}
-              {site.linkedin && <><Link href={site.linkedin} color="inherit">{host(site.linkedin)}</Link> · </>}
-              <Link href={site.github} color="inherit">{host(site.github)}</Link>
-            </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
+            <ProfilePhoto alt={site.name} width={88} round eager />
+            <Box>
+              <Typography variant="h1" sx={{ fontSize: 'clamp(2rem, 5vw, 2.8rem)' }}>
+                {site.name} <Box component="span" sx={{ fontWeight: 500, color: 'text.secondary', fontSize: '0.6em' }}>({site.localName})</Box>
+              </Typography>
+              <Typography sx={{ color: 'primary.dark', fontWeight: 650, my: 0.5 }}>{site.role}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                {site.email && <><Link href={`mailto:${site.email}`} color="inherit">{site.email}</Link> · </>}
+                {site.linkedin && <><Link href={site.linkedin} color="inherit">{host(site.linkedin)}</Link> · </>}
+                <Link href={site.github} color="inherit">{host(site.github)}</Link>
+              </Typography>
+            </Box>
           </Box>
           <Box className="cv-noprint" sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
             <Button variant="contained" href={site.cvPdf} download="Thien-Pham-CV.pdf">Download PDF</Button>

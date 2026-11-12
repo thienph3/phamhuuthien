@@ -52,6 +52,9 @@ test checks the proof numbers).
 To change text, edit `src/content/site.ts`. Lines marked `DRAFT` there still need your own facts.
 New colours or spacing belong in `src/theme/tokens.ts`, not in components.
 
+- **Photo:** `src/assets/profile-240.webp` and `profile-480.webp` (4:5, WebP, no metadata), shown by `ProfilePhoto` in
+  the hero and the `/cv` header. To replace it, export the same two sizes as WebP and strip metadata (no EXIF/GPS);
+  then run `npm run cv:pdf`.
 - **Experience:** `experience` in `site.ts`, most recent first, shown on `/cv`. Each job has a `timeline` span
   (fractional years, approximate: `2018.5` is mid-2018; `track2` splits a bar when the role changed); study and chess
   bars are `timelineExtras`. Jobs with `early: true` are shown
