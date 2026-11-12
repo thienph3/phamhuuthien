@@ -42,7 +42,7 @@ export function AwardsSection({ education, awards, publications }: { education: 
   return (
     <Section id="awards" eyebrow="Education, awards & publications" title="Where I studied, and what came of it">
       <Typography className="cv-detail" color="text.secondary" sx={{ maxWidth: tokens.proseWidth, mt: -1.5, mb: 4 }}>
-        A maths class at Lê Quý Đôn High School for the Gifted in Khánh Hòa, then software engineering at HCMC University
+        A maths class at Le Quy Don High School for the Gifted in Khanh Hoa, then software engineering at HCMC University
         of Education, where I competed in programming contests and co-authored papers on support vector machines.
       </Typography>
       <Group title="Education" first>

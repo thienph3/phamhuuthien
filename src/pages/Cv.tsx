@@ -57,7 +57,7 @@ export function Cv() {
       <Box component="section" aria-labelledby="skills-title" sx={{ py: { xs: 7, md: 9 }, borderTop: 1, borderColor: 'divider' }}>
         <PageContainer>
           <Typography id="skills-title" variant="h2" component="h2" sx={{ mb: 3 }}>Skills and languages</Typography>
-          <Box component="dl" sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '10rem 1fr' }, gap: { xs: 0.25, sm: 1.5 }, m: 0, '& dt': { fontFamily: tokens.mono, fontSize: '0.8rem', textTransform: 'uppercase', color: 'primary.dark', pt: '3px' }, '& dd': { m: 0, mb: { xs: 1.5, sm: 0 } } }}>
+          <Box component="dl" sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '10rem 1fr' }, gap: { xs: 0.25, sm: 1.5 }, '@media print': { rowGap: '2px' }, m: 0, '& dt': { fontFamily: tokens.mono, fontSize: '0.8rem', textTransform: 'uppercase', color: 'primary.dark', pt: '3px' }, '& dd': { m: 0, mb: { xs: 1.5, sm: 0 } } }}>
             {site.skills.map((g) => (
               <Box key={g.label} sx={{ display: 'contents' }}><dt>{g.label}</dt><dd>{g.items.join(' · ')}</dd></Box>
             ))}

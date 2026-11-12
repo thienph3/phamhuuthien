@@ -21,10 +21,14 @@ describe('brand sections', () => {
     const all = experience.flatMap((j) => j.highlights.map((h) => `${h.title} ${h.text}`)).join(' ')
     for (const p of proof) expect(all).toContain(p.value === '1 YAML file' ? 'one YAML file' : p.value === '7' ? 'seven ML engineers' : p.value)
   })
+  it('themes do not repeat what the proof strip and stories already say', () => {
+    const repeats = ['5–7', '15–20', '75%', 'YAML', 'seven', 'event structure', ...stories.map((s) => s.title)]
+    for (const t of themes) for (const r of repeats) expect(`${t.title} ${t.text}`).not.toContain(r)
+  })
   it('renders the proof strip, themes and stories', () => {
     wrap(<><ProofStrip items={proof} /><KnownForSection themes={themes} /><SelectedWorkSection stories={stories} /></>)
     expect(screen.getByRole('list', { name: 'In numbers' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'Data is a design problem' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: 'Let people serve themselves' })).toBeInTheDocument()
     for (const s of stories) expect(screen.getByRole('link', { name: `Read it on the CV: ${s.title}` })).toHaveAttribute('href', s.href)
   })
   it('the site tiles open the chat and the search', () => {

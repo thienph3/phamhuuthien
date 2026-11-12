@@ -15,17 +15,21 @@ export const site = {
   // Career identity (should stay true across jobs); the current job goes in the lead.
   headline: 'I build data and ML systems from zero to',
   headlineAccent: 'production',
-  lead: 'I’m Thien Pham (Phạm Hữu Thiên). Since 2016 I have built data platforms, ML models and backend services, and at be, Koina and FE Credit I was the first one in. Today I am a senior data engineer at Vinamilk, leading a team of seven ML engineers.',
+  lead: 'I’m Thien Pham (Phạm Hữu Thiên). Since 2016 I have built data platforms, ML models and backend services. Today I am a senior data engineer at Vinamilk, where I lead the ML engineering team.',
   now: ['now: chatbot, search, document AI and OCR', 'reading: The Colle System'],
   about: [
     'I started at Ho Chi Minh City University of Technology in 2007, then left to try playing chess professionally. It didn’t work out, so in 2012 I came back to IT at HCMC University of Education, where I co-authored machine learning papers and competed in programming contests. From 2016 I wrote C++ at FPT Software and full-stack code at i3 Solution, then moved into data at GHN in 2018.',
-    'I judge roles by scope more than title. I have been a company’s only data engineer, a head of data with a team of ten at its peak, a data engineering lead and the owner of core backend services. The move to backend in 2023 was deliberate, to learn systems at real scale, and in 2025 I returned to data and ML.',
-    'Side projects keep my product skills sharp: SpeakEng, a Flutter app that coaches English pronunciation with speech AI, and the chess notes on this site.',
+    'I judge roles by scope more than title. The move to backend in 2023 was deliberate, to learn systems at real scale, and in 2025 I returned to data and ML, now with a team to lead.',
+    'Outside work I build small things to keep learning: the chess notes and opening explorer on this site, and SpeakEng, a pronunciation coach that uses speech AI.',
   ],
   skills: [
-    // DRAFT: add the data and ML tools you use at work (warehouse, orchestration, cloud, LLM stack). A data hiring manager looks for these first.
-    { label: 'Data & ML', items: ['Python', 'SQL', 'XGBoost', 'YOLO', 'OCR'] },
-    { label: 'Product', items: ['TypeScript', 'React', 'Next.js', 'Flutter', 'Supabase'] },
+    // Current stack (Vinamilk, 2025 – now) first: a data hiring manager looks for these first.
+    { label: 'Programming', items: ['Python', 'SQL', 'Java', 'Go', 'React'] },
+    { label: 'Data & ML', items: ['LLMs (Amazon Bedrock)', 'Docling', 'EasyOCR', 'YOLO', 'XGBoost'] },
+    { label: 'Data platform', items: ['Airflow', 'Temporal', 'dbt', 'Cube', 'Superset', 'AWS Glue', 'Amazon S3'] },
+    { label: 'ML platform', items: ['KServe', 'MLflow', 'JupyterHub', 'Kubernetes (EKS)', 'Helm', 'Skaffold'] },
+    { label: 'Backend & cloud', items: ['FastAPI', 'PostgreSQL (RDS)', 'Redis (ElastiCache)', 'Kafka', 'Amazon MQ', 'Amazon SNS', 'Camunda (BPMN)'] },
+    { label: 'Tools', items: ['Poetry', 'Docker', 'Amazon ECR', 'GitLab', 'Jira', 'Confluence'] },
   ],
   contactNote: 'Happy to talk about data, ML and building teams.',
   // DRAFT copy from the brand mockup (2026-11-11); the owner will refine the words. Facts are from the verified content.
@@ -47,22 +51,25 @@ export const proof: Proof[] = [
   { value: '7', label: 'ML engineers I lead today, across four projects (Vinamilk)' },
 ]
 
-/** Home page: what I'm known for. DRAFT (owner to confirm the three). */
+/**
+ * Home page: what I'm known for. Patterns across jobs; each one must say something the hero, proof strip and stories
+ * do not (no repeated numbers or stories). DRAFT (owner to confirm the three).
+ */
 export const themes: Theme[] = [
   {
     title: 'Zero to production',
-    text: 'I like being the first one in: the only data engineer at be, the first head of data at Koina, the first backend engineer on my team at FE Credit.',
-    link: { label: 'See the be platform', href: `/cv#${anchors.highlight('be', 'Config-driven ELT platform')}` },
+    text: 'I like being the first one in: the only data engineer at be, the first head of data at Koina, with a team of ten at its peak, and the first backend engineer on my team at FE Credit.',
+    link: { label: 'See the team I built at Koina', href: `/cv#${anchors.highlight('Koina', 'Built and led the data team')}` },
   },
   {
-    title: 'Data is a design problem',
-    text: 'At MoMo every mini app tracked events its own way. The fix was one event structure for all of them, not another tool.',
-    link: { label: 'See MoMo’s event structure', href: `/cv#${anchors.highlight('MoMo', 'One event structure for every mini app')}` },
+    title: 'Let people serve themselves',
+    text: 'The best tool takes me out of the loop: business units tune their own search ranking at Vinamilk, and internal teams build their own campaign audiences in Tiki’s customer data platform. Configuration, not tickets.',
+    link: { label: 'See the search ranking', href: `/cv#${anchors.highlight('Vinamilk', 'Search ranking the business can tune')}` },
   },
   {
-    title: 'Speed people feel',
-    text: 'A chatbot that answers in 5–7 seconds instead of 15–20, and audience queries that take 75% less time. Speed is a feature users notice.',
-    link: { label: 'See the chatbot speed-up', href: `/cv#${anchors.highlight('Vinamilk', 'Chatbot answers in 5–7 seconds on average, down from 15–20')}` },
+    title: 'Close to the infrastructure',
+    text: 'I don’t stop at the model or the API. I owned Java services on AWS at FE Credit, and today I am prototyping an ML platform on Kubernetes for my team.',
+    link: { label: 'See the ML platform', href: `/cv#${anchors.highlight('Vinamilk', 'An ML platform for the team')}` },
   },
 ]
 
@@ -71,17 +78,17 @@ export const stories: Story[] = [
   {
     company: 'Vinamilk',
     when: '2025',
-    title: 'Chatbot answers in 5–7 seconds, down from 15–20',
+    title: 'Making an LLM chatbot fast enough to use',
     text: 'An LLM alone was too slow to answer. I added ML models to the chatbot’s pipeline.',
-    result: 'Average answer time: 15–20 s → 5–7 s.',
+    result: 'Average answer time: 15–20 s → 5–7 s. In production.',
     href: `/cv#${anchors.highlight('Vinamilk', 'Chatbot answers in 5–7 seconds on average, down from 15–20')}`,
   },
   {
     company: 'MoMo',
     when: '2022–2023',
     title: 'One event structure for every mini app',
-    text: 'Each mini app inside the super app tracked events its own way. I designed one standard, and my team built funnel reporting on top of it.',
-    result: 'Internal users set up a mini app’s funnel with a few settings.',
+    text: 'Each mini app inside the super app tracked events its own way. I designed one standard, and my team built a funnel reporting prototype on top of it.',
+    result: 'Prototype: internal users set up a mini app’s funnel with a few settings.',
     href: `/cv#${anchors.highlight('MoMo', 'One event structure for every mini app')}`,
   },
   {
@@ -127,23 +134,30 @@ export const experience: Job[] = [
     timeline: { from: 2025, to: 2026.9, track: 'ml' },
     companyNote: 'Dairy, Vietnam',
     period: '2025 – now',
-    role: 'Senior Data Engineer (formal title) · leads a team of seven ML engineers',
+    role: 'Senior Data Engineer · ML team lead',
     highlights: [
       {
         title: 'Leading a team of seven ML engineers',
-        // DRAFT: add one result each for document AI and OCR for retail, or a range if exact numbers are confidential.
-        text: 'I joined as a data engineer and worked as an ML engineer on the chatbot and the search system. I now lead seven ML engineers across four projects: document AI, OCR for retail, the chatbot and search.',
+        text: 'I joined as a data engineer and worked as an ML engineer on the chatbot and the search system. I now lead seven ML engineers across four projects: the chatbot and search, both in production, and document AI and OCR for retail, both prototypes.',
         tags: ['Leadership', 'Document AI', 'OCR'],
       },
       {
         title: 'Chatbot answers in 5–7 seconds on average, down from 15–20',
         text: 'An LLM alone took 15–20 seconds on average to answer. I added ML models to the chatbot’s pipeline, and the average response time fell to about 5–7 seconds.',
         tags: ['Chatbot', 'LLM', 'ML'],
+        status: 'production',
       },
       {
         title: 'Search ranking the business can tune',
         text: 'I built the backend that lets each business unit set the order of products in search results through configuration, ranked by its own metrics.',
         tags: ['Search', 'Ranking', 'Backend'],
+        status: 'production',
+      },
+      {
+        title: 'An ML platform for the team',
+        text: 'I work close to the infrastructure: a prototype platform with model serving on KServe, MLflow, JupyterHub and a custom workspace for ML engineers, on EKS and deployed with Skaffold and Helm.',
+        tags: ['ML platform', 'Kubernetes', 'AWS'],
+        status: 'prototype',
       },
     ],
   },
@@ -156,8 +170,9 @@ export const experience: Job[] = [
     highlights: [
       {
         title: 'Owned two core services',
-        text: 'I joined as the first backend engineer on the team and took over two core services: the one behind sales, and the eKYC service that verifies customers’ identity. I took the role to learn backend systems at real scale, and there is no faster way than owning them.',
-        tags: ['Backend', 'eKYC', 'Service ownership'],
+        text: 'I joined as the first backend engineer on the team and took over two core services: the sales service that consumer-loan sales run on, and the identity-verification (eKYC) service that confirms a customer is who they say they are, remotely. I took the role to learn backend systems at real scale, and there is no faster way than owning them. Both were written in Java and ran on AWS, with S3, Glue, SNS and Amazon MQ, and Camunda to run the business processes as BPMN.',
+        tags: ['Backend', 'Java', 'eKYC', 'AWS'],
+        status: 'production',
       },
     ],
   },
@@ -170,13 +185,15 @@ export const experience: Job[] = [
     highlights: [
       {
         title: 'One event structure for every mini app',
-        text: 'MoMo runs many mini apps inside one super app, and each tracked events its own way. I designed a standard event structure for all of them, so every internal user reads an event the same way. That was the real problem: a design problem, not a tooling one.',
+        text: 'MoMo runs many mini apps inside one super app, and each tracked events its own way. I designed a standard event structure for all of them, so every internal user could read an event the same way. That was the real problem: a design problem, not a tooling one.',
         tags: ['Event design', 'Data modelling'],
+        status: 'prototype',
       },
       {
         title: 'Funnel reporting on top of it',
-        text: 'With the standard in place, my team of data engineers and analysts built an application for automatic reporting: internal users set up a mini app’s funnel with a few settings and follow users across their journey.',
+        text: 'With the standard in place, my team of data engineers and analysts built a prototype application for automatic reporting: internal users set up a mini app’s funnel with a few settings and follow users across their journey.',
         tags: ['Product analytics', 'Funnels', 'Leadership'],
+        status: 'prototype',
       },
     ],
   },
@@ -192,12 +209,6 @@ export const experience: Job[] = [
         text: 'I left Tiki for the chance to build a data team from scratch. I hired and led it, grew it to ten people at its peak, and set its vision. Koina closed during COVID.',
         tags: ['Team of 10', 'Hiring', 'Leadership'],
       },
-      {
-        // DRAFT: replace with one concrete example (e.g. a metric or dashboard every team used).
-        title: 'A data mindset for the company',
-        text: 'Beyond the team, my job was to get the whole company working with data: helping teams ask questions the data could answer and make decisions with it.',
-        tags: ['Data culture'],
-      },
     ],
   },
   {
@@ -209,8 +220,8 @@ export const experience: Job[] = [
     highlights: [
       {
         title: 'Customer data platform redesign',
-        text: 'Tiki’s customer data platform lets internal teams build audiences for their campaigns. In six months I redesigned its customer space into layers of filters. Metric queries now take 75% less time, because the SQL builder reads the raw tables O(n) times instead of O(n²).',
-        tags: ['Data platform', 'SQL', 'CDP'],
+        text: 'Tiki’s customer data platform lets internal teams build audiences for their campaigns. In six months, working in Go, I redesigned its customer space into layers of filters. Metric queries now take 75% less time, because the SQL builder reads the raw tables O(n) times instead of O(n²).',
+        tags: ['Data platform', 'Go', 'SQL', 'CDP'],
         status: 'production',
       },
     ],
@@ -246,7 +257,7 @@ export const experience: Job[] = [
     company: 'GHN',
     timeline: { from: 2018, to: 2018.5, track: 'data' },
     early: true,
-    companyNote: 'Giao Hàng Nhanh, e-commerce delivery, Vietnam',
+    companyNote: 'E-commerce delivery, Vietnam',
     period: '2018',
     role: 'Senior Data Engineer',
     highlights: [
@@ -282,7 +293,7 @@ export const experience: Job[] = [
     highlights: [
       {
         title: 'Messaging for a proton therapy system',
-        // Client and internal system names removed until permission is confirmed (Hitachi; iSale/iFace at FE Credit).
+        // Former employers and clients: describe what a system does, never its internal or client name.
         text: 'My first job, on an outsourced project for a Japanese medical-device client’s proton beam cancer therapy system. I built a C++ service that passes messages over sockets, like a small pub/sub system. Messages were packed bit by bit, and in a medical system every bit has to be right. FPT Software works at CMMI Level 5, and it taught me how disciplined software delivery works.',
         tags: ['C++', 'Sockets', 'Pub/sub', 'Medical'],
       },
@@ -318,18 +329,18 @@ export const education: Education[] = [
     when: '2020–2025',
     title: 'Master’s coursework in Data Science (not completed)',
     school: 'VNU-HCM University of Science',
-    text: 'Coursework toward the degree; I did not finish it.',
+    text: 'Coursework toward the degree.',
   },
   {
     when: '2012–2016',
     title: 'Bachelor’s in Information Technology, Software Engineering',
     school: 'HCMC University of Education',
-    text: 'Trường Đại học Sư phạm TP.HCM, where I co-authored machine learning papers as a student (publications below).',
+    text: 'Where I co-authored machine learning papers as a student (publications below).',
   },
   {
     when: '2004–2007',
     title: 'Mathematics class',
-    school: 'Lê Quý Đôn High School for the Gifted, Khánh Hòa',
+    school: 'Le Quy Don High School for the Gifted, Khanh Hoa',
     text: 'Specialised maths class; on the province’s team at the national maths olympiad (below).',
   },
 ]
@@ -349,18 +360,18 @@ export const awards: Award[] = [
     when: '2014',
     title: 'Consolation prize',
     org: 'Vietnam Student Informatics Olympiad',
-    text: 'Giải Khuyến khích at Olympic Tin học Sinh viên Việt Nam, the national programming olympiad for university students.',
+    text: 'The national programming olympiad for university students.',
   },
   {
     when: '2004–2006',
-    title: 'Khánh Hòa team',
+    title: 'Khanh Hoa team',
     org: 'Vietnam National High School Mathematics Olympiad',
-    text: 'Selected twice for the province’s team, in the 2004–05 and 2005–06 school years. Earlier, second prize in Khánh Hòa’s Casio calculator mathematics contest (2003–04).',
+    text: 'Selected twice for the province’s team, in the 2004–05 and 2005–06 school years. Earlier, second prize in Khanh Hoa’s Casio calculator mathematics contest (2003–04).',
   },
   {
     when: '1998–2007',
     title: 'Gold and silver medals',
-    org: 'Khánh Hòa provincial chess championships',
+    org: 'Khanh Hoa provincial chess championships',
     text: 'FIDE rating: 1678 standard, 1637 rapid, as of November 2026.',
     link: { label: 'FIDE profile', href: 'https://ratings.fide.com/profile/561016578' },
   },

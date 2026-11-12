@@ -55,6 +55,7 @@ New colours or spacing belong in `src/theme/tokens.ts`, not in components.
 - **Photo:** `src/assets/profile-240.webp` and `profile-480.webp` (4:5, WebP, no metadata), shown by `ProfilePhoto` in
   the hero and the `/cv` header. To replace it, export the same two sizes as WebP and strip metadata (no EXIF/GPS);
   then run `npm run cv:pdf`.
+- **Former employers and clients:** describe what a system does, never its internal or client name.
 - **Experience:** `experience` in `site.ts`, most recent first, shown on `/cv`. Each job has a `timeline` span
   (fractional years, approximate: `2018.5` is mid-2018; `track2` splits a bar when the role changed); study and chess
   bars are `timelineExtras`. Jobs with `early: true` are shown

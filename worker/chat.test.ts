@@ -264,7 +264,7 @@ describe('helpers', () => {
   })
   it('unknown errors are unavailable', () => expect(mapAiError('boom')).toBe('unavailable'))
   it('job sections carry their company, including the Earlier jobs', () => {
-    expect(chatDocs.find((d) => d.id === 'exp-ghn')!.text).toMatch(/^At GHN \(Giao Hàng Nhanh/)
+    expect(chatDocs.find((d) => d.id === 'exp-ghn')!.text).toMatch(/^At GHN \(E-commerce delivery/)
     expect(chatDocs.find((d) => d.section === 'Experience · Tiki')!.text).toMatch(/^At Tiki \(E-commerce, Vietnam\)/)
     expect(chatDocs.filter((d) => d.section.startsWith('Experience · ')).every((d) => d.text.startsWith('At '))).toBe(true)
   })
